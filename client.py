@@ -84,14 +84,45 @@ class FirstScreen(tk.Tk):
         self.acc_pass.place(x=30,y=240,width=300,height=35)
 
                 
-        tk.Button(msg,cursor="hand2",text="Sign Up",fg="white",bg="#d77337",font=("times new roman",20)).place(x=80,y=400,width=180,height=40)
+        tk.Button(msg,cursor="hand2",command=self.register_user,text="Sign Up",fg="white",bg="#d77337",font=("times new roman",20)).place(x=80,y=400,width=180,height=40)
 
         msg.mainloop()
+
+
+    #-------------registe--------------------
+
+    def checkRegister(self,nickname):
+        for line in open("data/accounts.txt","r").readlines():
+            account_info = line.split()
+            if nickname==account_info[0]:
+                return False
+        return True
+
+    def register_user(self):
+        nickregister = self.acc_user.get()
+        passregister = self.acc_pass.get()
+
+        if (nickregister=='' or passregister==''):
+                messagebox.showerror("Error","Invalid Username/Password")
+
+        else:
+            if self.checkRegister(nickregister)==True:
+                file = open("data/accounts.txt","a")
+                file.write(f"\n{nickregister} {passregister}")
+                messagebox.showinfo("Congratulations","Your account has been registered")
+
+
+            else:
+                self.acc_pass.delete(0,END)
+                self.acc_user.delete(0,END)
+                messagebox.showerror("Error","Username already exists please enter new username username")
+                
+    #-------------login side-----------------   
     def checkLogin(self,nickname,password):
         for line in open("data/accounts.txt","r").readlines(): 
             login_info = line.split() 
             print(login_info[0],login_info[1])
-            print(nickname,password)
+            # print(nickname,password)
             if nickname == login_info[0] and password == login_info[1]:
                 return True
         return False
