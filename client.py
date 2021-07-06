@@ -55,11 +55,38 @@ class FirstScreen(tk.Tk):
         self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
-        tk.Button(self.first_frame,text="Create New Account",cursor="hand2",bg="#DED461",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
+        tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#DED461",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
         tk.Button(self.first_frame,command=self.login_funtion,cursor="hand2",text="Login",fg="white",bg="#d77337",font=("times new roman",20)).place(x=300,y=470,width=180,height=40)\
 
         self.mainloop()
-    
+
+    def createAccount(self):
+        msg=Tk()
+        msg.geometry("380x500")
+        msg.title("Create Account")
+        msg.resizable(False,False)
+        msg.configure(bg="white")        
+
+     
+        tk.Label(msg,text="Sign Up",font=("Impact",35,"bold"),fg="#d77337",bg="white").place(x=30,y=30)
+        tk.Label(msg,text="It's quick and easy",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="white").place(x=30,y=100)
+        tk.Label(msg,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=140)
+                
+                
+        self.acc_user=Entry(msg,font=("times new roman",15),bg="lightgray")
+                
+        self.acc_user.place(x=30,y=170,width=300,height=35)
+                
+                
+        tk.Label(msg,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=210)
+
+        self.acc_pass=tk.Entry(msg,font=("times new roman",15),bg="lightgray")
+        self.acc_pass.place(x=30,y=240,width=300,height=35)
+
+                
+        tk.Button(msg,cursor="hand2",text="Sign Up",fg="white",bg="#d77337",font=("times new roman",20)).place(x=80,y=400,width=180,height=40)
+
+        msg.mainloop()
     def checkLogin(self,nickname,password):
         for line in open("data/accounts.txt","r").readlines(): 
             login_info = line.split() 
