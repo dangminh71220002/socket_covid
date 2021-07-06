@@ -73,13 +73,13 @@ class FirstScreen(tk.Tk):
         nicknameClient=self.txt_user.get()
         passwordClient=self.txt_pass.get()
         
-        print("!@#111",nicknameClient,passwordClient)
+        
         if self.txt_pass.get()=="" or self.txt_user.get()=="":
-            print("!!!!!")
+            
             messagebox.showerror("Error","Invalid Username/Password")
         else:
             if self.checkLogin(nicknameClient,passwordClient)==1:
-                print("!2345")
+                
                 Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
             else:
                 self.txt_user.delete(0, END)
