@@ -30,11 +30,11 @@ class FirstScreen(tk.Tk):
         self.first_frame= tk.Frame(self,bg="blue")
         self.first_frame.pack(fill="both",expand=True)  
 
-        app_icon = Image.open('icon.ico')
+        app_icon = Image.open('image/icon.ico')
         app_icon = ImageTk.PhotoImage(app_icon)
         self.iconphoto(False, app_icon)
            
-        background = Image.open("cam.jpg")
+        background = Image.open("image/cam.jpg")
         background = background.resize((1450, 700), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
         tk.Label(self.first_frame, image=self.background).place(x=0, y=0)
@@ -60,13 +60,32 @@ class FirstScreen(tk.Tk):
 
         self.mainloop()
     
+    def checkLogin(self,nickname,password):
+        for line in open("data/accounts.txt","r").readlines(): 
+            login_info = line.split() 
+            print(login_info[0],login_info[1])
+            print(nickname,password)
+            if nickname == login_info[0] and password == login_info[1]:
+                return True
+        return False
+
     def login_funtion(self):
-        nicknameClinet=self.txt_user.get()
+        nicknameClient=self.txt_user.get()
+        passwordClient=self.txt_pass.get()
         
-        if self.txt_pass.get()!="1" or self.txt_user.get()!="1":
-            messagebox.showerror("Error","Invalid Username/Password",first_frame=self.first_frame)
+        print("!@#111",nicknameClient,passwordClient)
+        if self.txt_pass.get()=="" or self.txt_user.get()=="":
+            print("!!!!!")
+            messagebox.showerror("Error","Invalid Username/Password")
         else:
-            Clinet(self,self.first_frame,nicknameClinet,HOST,PORT)
+            if self.checkLogin(nicknameClient,passwordClient)==1:
+                print("!2345")
+                Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
+            else:
+                self.txt_user.delete(0, END)
+                self.txt_pass.delete(0, END)
+                messagebox.showerror("Error","Username or Password incorrect")
+            
 
 
 
@@ -74,7 +93,7 @@ class FirstScreen(tk.Tk):
 
 
 class Clinet(tk.Canvas):
-    def __init__(self,parent,first_frame,txt_user,host,port):
+    def __init__(self,parent,first_frame,txt_user,txt_pass,host,port):
         super().__init__(parent)
         self.window = 'ChatScreen'
 
@@ -102,17 +121,17 @@ class Clinet(tk.Canvas):
         edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
         menu.add_cascade(label="Emoji", menu=edit)
     #-----------------------------------------------------------------------------------
-        app_icon = Image.open('icon.ico')
+        app_icon = Image.open('image/icon.ico')
         app_icon = ImageTk.PhotoImage(app_icon)
        
         #SET BACKGROUND
-        background = Image.open("backG.gif")
+        background = Image.open("image/backG.gif")
         background = background.resize((1450, 700), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
-        background1 = Image.open("backG1.jpg")
+        background1 = Image.open("image/backG1.jpg")
         background1 = background1.resize((1450, 700), Image.ANTIALIAS)
         self.background1 = ImageTk.PhotoImage(background1)
-        background2 = Image.open("scenery.jpg")
+        background2 = Image.open("image/scenery.jpg")
         background2 = background2.resize((1450, 700), Image.ANTIALIAS)
         self.background2 = ImageTk.PhotoImage(background2)
         
@@ -120,23 +139,24 @@ class Clinet(tk.Canvas):
         tk.Label(self.parent, image=self.background).place(x=0, y=0)
 
         #chat LABEL
-        chat_label=Image.open("chat.jpg")
+        chat_label=Image.open("image/chat.jpg")
         chat_label=chat_label.resize((60,40),Image.ANTIALIAS)
         chat_label=ImageTk.PhotoImage(chat_label)
         tk.Label(self.parent,image=chat_label).pack()
 
         #BUTTON SEND
-        send_label=Image.open("send.jpg")
+        send_label=Image.open("image/send.jpg")
         send_label=send_label.resize((50,50),Image.ANTIALIAS)
         send_label=ImageTk.PhotoImage(send_label)
         self.send_label = tk.Button(self.parent, image=send_label,command=self.write, borderwidth = 0)
 
         #Scream Chat
-        chat_msg=Image.open("mess.jpg")
+        chat_msg=Image.open("image/mess.jpg")
         chat_msg=chat_msg.resize((100,50),Image.ANTIALIAS)
         self.chat_msg=ImageTk.PhotoImage(chat_msg)
         
         self.nickname = txt_user
+        self.password = txt_pass
         self.gui_done = False
         self.running = True
         gui_thread = threading.Thread(target=self.gui_loop) 

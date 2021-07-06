@@ -73,6 +73,8 @@ class FirstScreen(tk.Tk):
         inp="server: "+index+"\n"
         self.broadcast(inp.encode('utf-8'))
 
+    
+
     def receive(self):
         while True:
             client,address  =server.accept()
@@ -83,7 +85,9 @@ class FirstScreen(tk.Tk):
 
 
             client.send ("NICK".encode('utf-8'))
-            nickname= client.recv(1024)
+            nickname= client.recv(1024).decode()
+            
+
             nicknames.append(nickname)    
             clients.append(client) 
             self.text_area.config(state='normal')
@@ -99,8 +103,8 @@ class FirstScreen(tk.Tk):
             self.text_area.config(state='disabled')
 
 
-            self.broadcast("Connected to server\n".encode('utf-8'))
-            client.send("Connected to server".encode("utf-8"))
+            self.broadcast(f"{nickname} connected to server \n".encode('utf-8'))
+            client.send(f"Connected to server \n".encode("utf-8"))
             thread1 = threading.Thread(target= self.handle, args=(client,) )
             thread1.start()
         
