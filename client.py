@@ -55,7 +55,7 @@ class FirstScreen(tk.Tk):
         self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
-        tk.Button(self.first_frame,text="Forget Password?",cursor="hand2",bg="#DED461",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
+        tk.Button(self.first_frame,text="Create New Account",cursor="hand2",bg="#DED461",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
         tk.Button(self.first_frame,command=self.login_funtion,cursor="hand2",text="Login",fg="white",bg="#d77337",font=("times new roman",20)).place(x=300,y=470,width=180,height=40)\
 
         self.mainloop()
