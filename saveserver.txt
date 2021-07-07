@@ -1,0 +1,62 @@
+if len(clients) == 4:
+                client.send('not_allowed'.encode())
+
+                client.close()
+                continue
+            else:
+                client.send('allowed'.encode())
+
+            try:
+                client_name = client.recv(1024).decode('utf-8')
+                print(client_name)
+                client_pass = client.recv(1024).decode('utf-8')
+                print(client_pass)
+                option = client.recv(1024).decode('utf-8')
+                print(option)
+                
+                if option=='register':
+                    print(client_name)
+                    print("^@#",client_pass)
+                    if self.checkRegister(client_name)==1:
+                        client.send("complete".encode('utf-8'))
+
+                    else:
+                        client.send('exists'.encode('utf-8'))
+            
+
+                if option=='login':
+                    
+                    print(client_name)
+                    print("!@#$",client_pass)
+                    if self.checkLogin(client_name,client_pass)==1:
+                        client.send("true".encode('utf-8'))
+                        self.text_area.config(state='normal')
+                        self.text_area.insert('end',f"Connected with{str(address)}\n")
+                        self.text_area.yview('end')
+                        self.text_area.config(state='disabled')
+                        nicknames.append(client_name)    
+                        clients.append(client) 
+                        self.text_area.config(state='normal')
+                        self.text_area.insert('end',f"Nick:{client_name}\n")
+                        self.text_area.yview('end')
+                        self.text_area.config(state='disabled')
+
+                        self.text_area.config(state='normal')
+                        self.text_area.insert('end',f"NICKNAME of  the clients is: {client_name}\n")
+                        self.text_area.yview('end')
+                        self.text_area.config(state='disabled')
+
+                        self.broadcast(f"{client_name} connected to server \n".encode('utf-8'))
+                        client.send(f"Connected to server \n".encode("utf-8"))
+                        thread1 = threading.Thread(target=   self.handle, args=(client,) )
+                        thread1.start()
+
+
+                    else:
+                        client.send('wrong_password'.encode('utf-8'))
+
+                
+            except:
+                print(f"{address} disconnected")
+                client.close()
+                continue

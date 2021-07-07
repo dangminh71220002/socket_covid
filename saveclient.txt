@@ -1,0 +1,32 @@
+        username = self.txt_user.get()
+        password = self.txt_pass.get()
+        if (username=='' or password==''):
+            messagebox.showerror("Error","Invalid Username/Password")
+        else:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                client.connect((HOST,PORT))
+                status = client.recv(1024).decode()
+                if status == 'not_allowed':
+                    client.close()
+                    messagebox.showinfo(title="Can't connect !", message='Sorry, server is completely occupied.'
+                                                                         'Try again later')
+                    return
+
+            except ConnectionRefusedError:
+                messagebox.showinfo(title="Can't connect !", message="Server is offline , try again later.")
+                print("Server is offline , try again later.")
+                return
+            client.send('login'.encode('utf-8'))
+            client.send(username.encode('utf-8'))
+            client.send(password.encode('utf-8'))
+
+            status = client.recv(1024).decode()
+            if status=='wrong_pass':
+                self.txt_user.delete(0, END)
+                self.txt_pass.delete(0, END)
+                messagebox.showerror("Error","Username or Password incorrect")
+                client.close()
+            else:
+                Clinet(self,self.first_frame,client,username,password,HOST,PORT)
+                
