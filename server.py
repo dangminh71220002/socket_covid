@@ -81,6 +81,7 @@ class FirstScreen(tk.Tk):
                     
                 message=client.recv(1024)
                 self.text_area.config(state='normal')
+                self.text_area.insert('end',"User chat\n")
                 self.text_area.insert('end',message)
                 self.text_area.yview('end')
                 self.text_area.config(state='disabled')     
@@ -102,24 +103,22 @@ class FirstScreen(tk.Tk):
         self.text_area.config(state='disabled')
         self.broadcast(inp.encode('utf-8'))
 
-    
 
-    def receive(self):
-        while True:
-            client,address  =server.accept()
-            self.text_area.config(state='normal')
-            self.text_area.insert('end',f"Connected with{str(address)}\n")
-            self.text_area.yview('end')
-            self.text_area.config(state='disabled')
+    #-------Login--------
+    def checkLogin(self,nickname,password):
+        for line in open("data/accounts.txt","r").readlines():
+            login_info = line.split()
+            if nickname == login_info[0] and password == login_info[1]:
+                return True
+        return False    
 
-
-            client.send ("NICK".encode('utf-8'))
-            nickname= client.recv(1024).decode()
-            
-
+    def ProcessLogin(self,nickname,password,client,address):
+        if self.checkLogin(nickname,password) == True:
+            client.send('true'.encode('utf-8'))
             nicknames.append(nickname)    
             clients.append(client) 
             self.text_area.config(state='normal')
+            self.text_area.insert('end',"User login\n")
             self.text_area.insert('end',f"Nick:{nickname}\n")
             self.text_area.yview('end')
             self.text_area.config(state='disabled')
@@ -136,9 +135,72 @@ class FirstScreen(tk.Tk):
             client.send(f"Connected to server \n".encode("utf-8"))
             thread1 = threading.Thread(target= self.handle, args=(client,) )
             thread1.start()
-        
-    
+        else:
+            client.send('wrong_pass'.encode('utf-8'))
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',f"{address} disconnected\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+            client.close()
 
+    #========register=========
+    def checkRegister(self,nickname,password):
+        for line in open("data/accounts.txt","r").readlines():
+            account_info = line.split()
+            if nickname==account_info[0]:
+                return False
+        return True
+
+    def ProcessRegister(self,nickname,password,client,address):
+        if self.checkRegister(nickname,password)==True:
+            client.send('complete'.encode('utf-8'))
+            file = open("data/accounts.txt","a")
+            file.write(f"\n{nickname} {password}")
+
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',"User register\n")
+            self.text_area.insert('end',f"Nick:{nickname}\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+        else:
+            client.send('exists'.encode('utf-8'))
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',f"{address} disconnected\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+            client.close()
+
+
+    def receive(self):
+        while True:
+            client,address  =server.accept()
+
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',f"Connected with{str(address)}\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+
+            if len(clients)==5:
+                client.send('not_allowed'.encode())
+                
+                continue
+            else:
+                client.send('allowed'.encode())
+            try:
+                nickname= client.recv(1024).decode('utf-8')
+                password= client.recv(1024).decode('utf-8')
+                option  = client.recv(1024).decode('utf-8')
+                print(option)
+            except:
+                self.text_area.config(state='normal')
+                self.text_area.insert('end',f"{address} disconnected\n")
+                self.text_area.yview('end')
+                self.text_area.config(state='disabled')
+                client.close()
+                continue
+            if option=='login': self.ProcessLogin(nickname,password,client,address)
+            if option=='register': self.ProcessRegister(nickname,password,client,address)
+
+            
        
 FirstScreen(HOST,PORT)
-
