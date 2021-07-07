@@ -30,19 +30,19 @@ class FirstScreen(tk.Tk):
         self.first_frame= tk.Frame(self,bg="blue")
         self.first_frame.pack(fill="both",expand=True)  
 
-        app_icon = Image.open('image/icon.ico')
+        app_icon = Image.open('image/clientlogo.jpg')
         app_icon = ImageTk.PhotoImage(app_icon)
         self.iconphoto(False, app_icon)
            
-        background = Image.open("image/cam.jpg")
-        background = background.resize((1450, 700), Image.ANTIALIAS)
+        background = Image.open("image/cam2.jpg")
+        background = background.resize((1000, 600), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
         tk.Label(self.first_frame, image=self.background).place(x=0, y=0)
 
   
-        tk.Label(self.first_frame,text="Login Here",font=("Impact",35,"bold"),fg="#d77337",bg="#DED461").place(x=90,y=30)
-        tk.Label(self.first_frame,text="Accountant Emplyee Login Area",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="#DED461").place(x=90,y=100)
-        tk.Label(self.first_frame,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="#DED461").place(x=90,y=140)
+        tk.Label(self.first_frame,text="Login Here",font=("Impact",35,"bold"),fg="#d77337",bg="#FAFAFA").place(x=90,y=30)
+        tk.Label(self.first_frame,text="Accountant Emplyee Login Area",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="#FAFAFA").place(x=90,y=100)
+        tk.Label(self.first_frame,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=140)
         
         
         self.txt_user=Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
@@ -50,12 +50,12 @@ class FirstScreen(tk.Tk):
         self.txt_user.place(x=90,y=170,width=350,height=35)
         
         
-        tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#DED461").place(x=90,y=210)
+        tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=210)
 
         self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
-        tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#DED461",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
+        tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#FAFAFA",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
         tk.Button(self.first_frame,command=self.login_funtion,cursor="hand2",text="Login",fg="white",bg="#d77337",font=("times new roman",20)).place(x=300,y=470,width=180,height=40)\
 
         self.mainloop()
@@ -106,43 +106,87 @@ class FirstScreen(tk.Tk):
                 messagebox.showerror("Error","Invalid Username/Password")
 
         else:
-            if self.checkRegister(nickregister)==True:
-                file = open("data/accounts.txt","a")
-                file.write(f"\n{nickregister} {passregister}")
-                messagebox.showinfo("Congratulations","Your account has been registered")
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                client.connect((HOST,PORT))
+                status = client.recv(1024).decode('utf-8')
+                if status == 'not_allowed':
+                    client.close()
+                    messagebox.showinfo(title="Can't connect !", message='Sorry, server is completely occupied.'
+                                                                         'Try again later')
+                    return
+            except ConnectionRefusedError:
+                messagebox.showinfo(title="Can't connect !", message="Server is offline , try again later.")
+                print("Server is offline , try again later.")
+                return
+            client.send(nickregister.encode('utf-8'))
+            client.send(passregister.encode('utf-8'))
+            client.send('register'.encode('utf-8'))
 
-
+            result = client.recv(1024).decode('utf-8')
+            if result == 'exists':
+                self.txt_user.delete(0, END)
+                self.txt_pass.delete(0, END)
+                messagebox.showerror("Error","Username already exists")
+                client.close()
             else:
-                self.acc_pass.delete(0,END)
-                self.acc_user.delete(0,END)
-                messagebox.showerror("Error","Username already exists please enter new username username")
+                messagebox.showinfo("Congratulations","Successful account registration")
+
+
+
+            # if self.checkRegister(nickregister)==True:
+            #     file = open("data/accounts.txt","a")
+            #     file.write(f"\n{nickregister} {passregister}")
+            #     messagebox.showinfo("Congratulations","Your account has been registered")
+
+
+            # else:
+            #     self.acc_pass.delete(0,END)
+            #     self.acc_user.delete(0,END)
+            #     messagebox.showerror("Error","Username already exists please enter new username username")
                 
     #-------------login side-----------------   
-    def checkLogin(self,nickname,password):
-        for line in open("data/accounts.txt","r").readlines(): 
-            login_info = line.split() 
-            print(login_info[0],login_info[1])
-            # print(nickname,password)
-            if nickname == login_info[0] and password == login_info[1]:
-                return True
-        return False
 
     def login_funtion(self):
         nicknameClient=self.txt_user.get()
         passwordClient=self.txt_pass.get()
         
         
-        if self.txt_pass.get()=="" or self.txt_user.get()=="":
-            
+        if nicknameClient=="" or passwordClient=="":        
             messagebox.showerror("Error","Invalid Username/Password")
         else:
-            if self.checkLogin(nicknameClient,passwordClient)==1:
-                
-                Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
-            else:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                client.connect((HOST,PORT))
+                status = client.recv(1024).decode('utf-8')
+                if status == 'not_allowed':
+                    client.close()
+                    messagebox.showinfo(title="Can't connect !", message='Sorry, server is completely occupied.'
+                                                                         'Try again later')
+                    return
+            except ConnectionRefusedError:
+                messagebox.showinfo(title="Can't connect !", message="Server is offline , try again later.")
+                print("Server is offline , try again later.")
+                return
+            client.send(nicknameClient.encode('utf-8'))
+            client.send(passwordClient.encode('utf-8'))
+            client.send('login'.encode('utf-8'))
+
+            result = client.recv(1024).decode('utf-8')
+            if result == 'wrong_pass':
                 self.txt_user.delete(0, END)
                 self.txt_pass.delete(0, END)
                 messagebox.showerror("Error","Username or Password incorrect")
+                client.close()
+            else:
+                Clinet(self,self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
+            # if self.checkLogin(nicknameClient,passwordClient)==1:
+                
+            #     Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
+            # else:
+            #     self.txt_user.delete(0, END)
+            #     self.txt_pass.delete(0, END)
+            #     messagebox.showerror("Error","Username or Password incorrect")
             
 
 
@@ -151,17 +195,17 @@ class FirstScreen(tk.Tk):
 
 
 class Clinet(tk.Canvas):
-    def __init__(self,parent,first_frame,txt_user,txt_pass,host,port):
+    def __init__(self,parent,first_frame,client,txt_user,txt_pass,host,port):
         super().__init__(parent)
         self.window = 'ChatScreen'
 
         self.first_frame = first_frame
         self.first_frame.pack_forget()
-
+        self.sock = client
         self.parent = parent
 
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((host,port))
+        # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.sock.connect((host,port))
         
         #----------------------menu--------------------
         menu = Menu(self)
@@ -179,28 +223,16 @@ class Clinet(tk.Canvas):
         edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
         menu.add_cascade(label="Emoji", menu=edit)
     #-----------------------------------------------------------------------------------
-        app_icon = Image.open('image/icon.ico')
-        app_icon = ImageTk.PhotoImage(app_icon)
+     
        
         #SET BACKGROUND
-        background = Image.open("image/backG.gif")
+        background = Image.open("image/covid.jpg")
         background = background.resize((1450, 700), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
-        background1 = Image.open("image/backG1.jpg")
-        background1 = background1.resize((1450, 700), Image.ANTIALIAS)
-        self.background1 = ImageTk.PhotoImage(background1)
-        background2 = Image.open("image/scenery.jpg")
-        background2 = background2.resize((1450, 700), Image.ANTIALIAS)
-        self.background2 = ImageTk.PhotoImage(background2)
+       
         
-
         tk.Label(self.parent, image=self.background).place(x=0, y=0)
 
-        #chat LABEL
-        chat_label=Image.open("image/chat.jpg")
-        chat_label=chat_label.resize((60,40),Image.ANTIALIAS)
-        chat_label=ImageTk.PhotoImage(chat_label)
-        tk.Label(self.parent,image=chat_label).pack()
 
         #BUTTON SEND
         send_label=Image.open("image/send.jpg")
@@ -209,8 +241,8 @@ class Clinet(tk.Canvas):
         self.send_label = tk.Button(self.parent, image=send_label,command=self.write, borderwidth = 0)
 
         #Scream Chat
-        chat_msg=Image.open("image/mess.jpg")
-        chat_msg=chat_msg.resize((100,50),Image.ANTIALIAS)
+        chat_msg=Image.open("image/covidmini.jpg")
+        chat_msg=chat_msg.resize((50,50),Image.ANTIALIAS)
         self.chat_msg=ImageTk.PhotoImage(chat_msg)
         
         self.nickname = txt_user
@@ -232,7 +264,7 @@ class Clinet(tk.Canvas):
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
     
-        tk.Label(self.parent,image=self.chat_msg).pack()
+        tk.Label(self.parent,image=self.chat_msg,bg="#010E1E").pack()
 
         self.input_area = tk.Text(self.parent, height=3)
         self.input_area.config(font=("Transformers Movie",10))
