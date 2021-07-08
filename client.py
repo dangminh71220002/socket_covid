@@ -29,29 +29,28 @@ class FirstScreen(tk.Tk):
         self.resizable(False,False)
         self.first_frame= tk.Frame(self,bg="blue")
         self.first_frame.pack(fill="both",expand=True)  
-
+        #ICON
         app_icon = Image.open('image/clientlogo.jpg')
         app_icon = ImageTk.PhotoImage(app_icon)
         self.iconphoto(False, app_icon)
-           
+        #BACKGROUND
         background = Image.open("image/cam2.jpg")
         background = background.resize((1000, 600), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
         tk.Label(self.first_frame, image=self.background).place(x=0, y=0)
 
-  
+
         tk.Label(self.first_frame,text="Login Here",font=("Impact",35,"bold"),fg="#d77337",bg="#FAFAFA").place(x=90,y=30)
         tk.Label(self.first_frame,text="Accountant Emplyee Login Area",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="#FAFAFA").place(x=90,y=100)
         tk.Label(self.first_frame,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=140)
         
-        
+        #Enter User
         self.txt_user=Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
-        
         self.txt_user.place(x=90,y=170,width=350,height=35)
         
         
         tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=210)
-
+        #Enter Pass
         self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
@@ -72,14 +71,14 @@ class FirstScreen(tk.Tk):
         tk.Label(msg,text="It's quick and easy",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="white").place(x=30,y=100)
         tk.Label(msg,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=140)
                 
-                
+        #create User   
         self.acc_user=Entry(msg,font=("times new roman",15),bg="lightgray")
                 
         self.acc_user.place(x=30,y=170,width=300,height=35)
                 
                 
         tk.Label(msg,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=210)
-
+        #create Pass
         self.acc_pass=tk.Entry(msg,font=("times new roman",15),bg="lightgray")
         self.acc_pass.place(x=30,y=240,width=300,height=35)
 
@@ -223,6 +222,9 @@ class Clinet(tk.Canvas):
         edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
         edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
         menu.add_cascade(label="Emoji", menu=edit)
+        User_manual=Menu(menu)
+        User_manual.add_command(label="User manual",command=self.User_manual)
+        menu.add_cascade(label="User manual", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
@@ -275,7 +277,7 @@ class Clinet(tk.Canvas):
         
         self.send_label.pack()
   
-# Create button and image
+# Create def of button and set image
         
 
         self.gui_done = True
@@ -308,6 +310,15 @@ class Clinet(tk.Canvas):
         heart="\U0001F97A"
         message = f"{self.nickname} : {heart} \n"
         self.sock.send(message.encode('utf-8'))
+    def User_manual(self):
+        manual=Tk()
+        manual.resizable(False,False)
+        manual.geometry("400x400")
+        self.text_user = tk.scrolledtext.ScrolledText(manual)
+        self.text_user.config(state='disabled',fg="#00B7FE")
+        self.text_user.configure(bg="white")
+        self.text_user.place(x=0,y=0,width=400,height=400)
+#-------------------------------------------------------------------------------
     def write(self):
         if(self.input_area.get('1.0', 'end') != '\n' ):
             message = f"{self.nickname} : {self.input_area.get('1.0', 'end')}"
