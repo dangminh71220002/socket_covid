@@ -50,7 +50,7 @@ class FirstScreen(tk.Tk):
         tk.Label(self.first_frame,text="SERVER",font=("Impact",20,"bold"),fg="#d77337",bg="#DED461").place(x=570,y=20)
         tk.Label(self.first_frame,text="Client",font=("times new roman",15),fg="#d77337",bg="#DED461").place(x=93,y=90)
         tk.Label(self.first_frame,text="Kick Client",font=("times new roman",15),fg="#d77337",bg="#DED461").place(x=1030,y=90)
-        self.button_Kick=tk.Button(self.first_frame,cursor="hand2",text="Kick",fg="white",bg="#d77337",font=("times new roman",15,),).place(x=1050,y=200,width=60,height=30)
+        self.button_Kick=tk.Button(self.first_frame,cursor="hand2",text="Kick",fg="white",bg="#d77337",font=("times new roman",15),command=self.writeKick).place(x=1050,y=200,width=60,height=30)
         
         self.text_user = tk.scrolledtext.ScrolledText(self.first_frame)
         self.text_user.config(state='disabled',fg="#00B7FE")
@@ -70,6 +70,35 @@ class FirstScreen(tk.Tk):
         thread2.start() 
         
         self.mainloop()
+
+
+    def kickClient(self,name):
+        for n in nicknames:
+            print(n)
+        print(name)
+        if name in nicknames:
+            print(1)
+            name_index= nicknames.index(name)
+            print(name)
+            client_kick=clients[name_index]
+            clients.remove(client_kick)       
+            client_kick.send("You were kicked by admin ".encode('utf-8'))   
+            client_kick.close()
+            nicknames.remove(name)
+            print("dang")
+        
+
+    def writeKick(self):
+
+        
+        
+        name_kick=self.input_kick.get('1.0','end-1c')
+        name_kick="b'"+name_kick+"'"
+        self.name_kick=name_kick
+        self.input_kick.delete('1.0','end')
+       
+
+        self.kickClient(name_kick)
         
 
                
