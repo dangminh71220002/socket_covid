@@ -43,12 +43,13 @@ class FirstScreen(tk.Tk):
         self.text_area.place(x=275,y=85)
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
+        
 
         receive_thread = threading.Thread(target = self.receive)
         receive_thread.start()
         tk.Label(self.first_frame,text="SERVER",font=("Impact",20,"bold"),fg="#d77337",bg="#DED461").place(x=570,y=20)
         tk.Label(self.first_frame,text="Client",font=("times new roman",15),fg="#d77337",bg="#DED461").place(x=93,y=90)
-        tk.Label(self.first_frame,text="Kick CLient",font=("times new roman",15),fg="#d77337",bg="#DED461").place(x=1030,y=90)
+        tk.Label(self.first_frame,text="Kick Client",font=("times new roman",15),fg="#d77337",bg="#DED461").place(x=1030,y=90)
         self.button_Kick=tk.Button(self.first_frame,cursor="hand2",text="Kick",fg="white",bg="#d77337",font=("times new roman",15,),).place(x=1050,y=200,width=60,height=30)
         
         self.text_user = tk.scrolledtext.ScrolledText(self.first_frame)
@@ -65,6 +66,9 @@ class FirstScreen(tk.Tk):
         self.input.config(font=("Transformers Movie",10))
         self.input.place(x=280, y=500,width=570,height=50)
         self.send=tk.Button(self.first_frame,cursor="hand2",text="send",fg="white",bg="#d77337",font=("times new roman",15,),command=self.ServerChat).place(x=870,y=500,width=60,height=50)
+        thread2 = threading.Thread(target=self.ServerChat,args=( ))
+        thread2.start() 
+        
         self.mainloop()
         
 
@@ -76,8 +80,7 @@ class FirstScreen(tk.Tk):
     def handle(self,client): 
          while True :
             try:
-                thread2 = threading.Thread(target=self.ServerChat,args=(server, ))
-                thread2.start() 
+                
                     
                 message=client.recv(1024)
                 self.text_area.config(state='normal')
@@ -93,27 +96,36 @@ class FirstScreen(tk.Tk):
                 nickname=nicknames[index]
                 nicknames.remove(nickname)
                 break
-    def ServerChat(self,client):
+    def ServerChat(self):
         index=self.input.get('1.0','end')
-        self.input.delete('1.0','end')
-        inp="server: "+index+"\n"
-        self.text_area.config(state='normal')
-        self.text_area.insert('end',inp)
-        self.text_area.yview('end')
-        self.text_area.config(state='disabled')
-        self.broadcast(inp.encode('utf-8'))
+        if index!='\n':
+            self.input.delete('1.0','end')
+            inp="server: "+index
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',inp)
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+            self.broadcast(inp.encode('utf-8'))
+        
+
+    def stop(self):
+        self.first_frame.destroy()
+        server.close()
+        exit(0)
 
 
     #-------Login--------
     def checkLogin(self,nickname,password):
         for line in open("data/accounts.txt","r").readlines():
             login_info = line.split()
+
             if nickname == login_info[0] and password == login_info[1]:
                 return True
         return False    
 
     def ProcessLogin(self,nickname,password,client,address):
         if self.checkLogin(nickname,password) == True:
+            
             client.send('true'.encode('utf-8'))
             nicknames.append(nickname)    
             clients.append(client) 
@@ -190,7 +202,7 @@ class FirstScreen(tk.Tk):
                 nickname= client.recv(1024).decode('utf-8')
                 password= client.recv(1024).decode('utf-8')
                 option  = client.recv(1024).decode('utf-8')
-                print(option)
+                print(option,nickname,password)
             except:
                 self.text_area.config(state='normal')
                 self.text_area.insert('end',f"{address} disconnected\n")

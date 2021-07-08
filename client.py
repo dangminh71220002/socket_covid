@@ -173,6 +173,7 @@ class FirstScreen(tk.Tk):
             client.send('login'.encode('utf-8'))
 
             result = client.recv(1024).decode('utf-8')
+            print(result)
             if result == 'wrong_pass':
                 self.txt_user.delete(0, END)
                 self.txt_pass.delete(0, END)
@@ -308,10 +309,10 @@ class Clinet(tk.Canvas):
         message = f"{self.nickname} : {heart} \n"
         self.sock.send(message.encode('utf-8'))
     def write(self):
-        
-        message = f"{self.nickname} : {self.input_area.get('1.0', 'end')}\n"
-        self.sock.send(message.encode('utf-8'))
-        self.input_area.delete('1.0', 'end')
+        if(self.input_area.get('1.0', 'end') != '\n' ):
+            message = f"{self.nickname} : {self.input_area.get('1.0', 'end')}"
+            self.sock.send(message.encode('utf-8'))
+            self.input_area.delete('1.0', 'end')
 
     def stop(self):
         self.running = False
