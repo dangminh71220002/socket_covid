@@ -73,13 +73,8 @@ class FirstScreen(tk.Tk):
 
 
     def kickClient(self,name):
-        for n in nicknames:
-            print(n)
-        print(name)
         if name in nicknames:
-            print(1)
             name_index= nicknames.index(name)
-            print(name)
             client_kick=clients[name_index]
             clients.remove(client_kick)       
             client_kick.send("You were kicked by admin ".encode('utf-8'))   
@@ -89,15 +84,9 @@ class FirstScreen(tk.Tk):
         
 
     def writeKick(self):
-
-        
-        
         name_kick=self.input_kick.get('1.0','end-1c')
-        name_kick="b'"+name_kick+"'"
         self.name_kick=name_kick
         self.input_kick.delete('1.0','end')
-       
-
         self.kickClient(name_kick)
         
 
@@ -110,12 +99,13 @@ class FirstScreen(tk.Tk):
          while True :
             try:
                 message=client.recv(1024)
+                print(message)
                 self.text_area.config(state='normal')
                 self.text_area.insert('end',"User chat\n")
                 self.text_area.insert('end',message)
                 self.text_area.yview('end')
                 self.text_area.config(state='disabled')
-                print(message)     
+                
                 self.broadcast(message)
             except:
                 index = clients.index(client)

@@ -342,9 +342,7 @@ class Clinet(tk.Canvas):
             except ConnectionResetError:
                 messagebox.showinfo(title='No Connection !', message="Server offline..try connecting again later")
                 self.sock.close()
-                print("dis")
                 self.first_screen()
-                print("disss")
                 break 
     def first_screen(self):
         self.destroy()
