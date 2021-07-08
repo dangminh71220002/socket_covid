@@ -80,14 +80,13 @@ class FirstScreen(tk.Tk):
     def handle(self,client): 
          while True :
             try:
-                
-                    
                 message=client.recv(1024)
                 self.text_area.config(state='normal')
                 self.text_area.insert('end',"User chat\n")
                 self.text_area.insert('end',message)
                 self.text_area.yview('end')
-                self.text_area.config(state='disabled')     
+                self.text_area.config(state='disabled')
+                print(message)     
                 self.broadcast(message)
             except:
                 index = clients.index(client)

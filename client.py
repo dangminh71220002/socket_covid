@@ -335,12 +335,22 @@ class Clinet(tk.Canvas):
                         self.text_area.yview('end')
                         self.text_area.config(state='disabled')
             except ConnectionAbortedError:
-                break
-            except:
-                print("Error")
+                print("you disconnected ...")
+                
                 self.sock.close()
-                break  
-
+                break
+            except ConnectionResetError:
+                messagebox.showinfo(title='No Connection !', message="Server offline..try connecting again later")
+                self.sock.close()
+                print("dis")
+                self.first_screen()
+                print("disss")
+                break 
+    def first_screen(self):
+        self.destroy()
+        self.parent.geometry("1000x600")
+        self.parent.first_frame.pack(fill="both", expand=True)
+        self.window = None
 
 
 
