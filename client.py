@@ -228,7 +228,7 @@ class Clinet(tk.Canvas):
         menu.add_cascade(label="Emoji", menu=edit)
         User_manual=Menu(menu)
         User_manual.add_command(label="User manual",command=self.User_manual)
-        menu.add_cascade(label="User manual", menu=User_manual)
+        menu.add_cascade(label="Help", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
