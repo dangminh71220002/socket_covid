@@ -8,6 +8,7 @@ import pickle
 from datetime import datetime
 import os
 import threading
+from threading import Timer
 import socket
 import threading
 import tkinter
@@ -19,7 +20,7 @@ import emoji
 import tkinter as tk
 import urllib, json
 import urllib.request as ur
-
+import hashlib
 HOST = '127.0.0.1'
 PORT = 80
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -127,8 +128,43 @@ class FirstScreen(tk.Tk):
                     mess=''
                     num=1
                 else:
-                    mess+=i['country']+' , '
+                    mess+=i['country']+','
                     num+=1
+
+    def getInfoCovid(self,client,region):
+        regionTemp = region
+        region = urllib.parse.quote(region)
+        url = f"https://coronavirus-19-api.herokuapp.com/countries/{region}"
+        try:
+            response = ur.urlopen(url)
+            data = json.loads(response.read())
+            covid = f'''{regionTemp} covid figures
+Total cases : {data['cases']}
+Today cases : {data['todayCases']}
+Deaths : {data['deaths']}
+Recover: {data['recovered']}\n'''
+            client.send(covid.encode('utf-8'))
+        except:
+            client.send(f"No data for {regionTemp} could be found\n".encode('utf-8'))
+
+    def setInterval(self,timer, task):
+        isStop = task()
+        if not isStop:
+            Timer(timer, self.setInterval, [timer, task]).start()
+
+    def update(self):
+        url = f"https://coronavirus-19-api.herokuapp.com/countries/world"
+        try:
+            response = ur.urlopen(url)
+            data = json.loads(response.read())
+            covid = f'''World covid figures
+Total cases : {data['cases']}
+Today cases : {data['todayCases']}
+Deaths : {data['deaths']}
+Recover: {data['recovered']}\n'''
+            self.broadcast(covid.encode('utf-8'))
+        except:
+            self.broadcast(f"Error".encode('utf-8'))
 
     def handle(self,client): 
          while True :
@@ -147,8 +183,17 @@ class FirstScreen(tk.Tk):
                 else:
                     if country in temp[1]:
                         self.getCountry(client)
-                    if (covid in temp[1]):
-                        print('456')
+                    if covid in temp[1]:
+                        # print(temp[1][8:len(temp[1])-1])
+
+                        region = temp[1][8:len(temp[1])-1]
+                        self.text_area.config(state='normal')
+                        self.text_area.insert('end',"User search covid\n")
+                        self.text_area.insert('end',f"Region :{region}\n")
+                        self.text_area.yview('end')
+                        self.text_area.config(state='disabled')
+                        self.getdataCovid()
+                        self.getInfoCovid(client,region)
             except:
                 index = clients.index(client)
                 clients.remove(client)
@@ -177,16 +222,28 @@ class FirstScreen(tk.Tk):
 
     #-------Login--------
     def checkLogin(self,nickname,password):
+        salt = "5gz"
+        check_password = password+salt
+        check_password = hashlib.md5(check_password.encode())
         for line in open("data/accounts.txt","r").readlines():
             login_info = line.split()
-
-            if nickname == login_info[0] and password == login_info[1]:
+            
+            if nickname == login_info[0] and check_password.hexdigest() == login_info[1]:
                 return True
         return False    
 
     def ProcessLogin(self,nickname,password,client,address):
         if self.checkLogin(nickname,password) == True:
             
+            
+            if nickname in nicknames:
+                client.send('logged'.encode('utf-8'))
+                self.text_user.config(state='normal')
+                self.text_user.insert('end',f"{address} disconnected\n")
+                self.text_user.yview('end')
+                self.text_user.config(state='disabled')
+                client.close()
+                return
             client.send('true'.encode('utf-8'))
             nicknames.append(nickname)    
             clients.append(client) 
@@ -218,9 +275,11 @@ class FirstScreen(tk.Tk):
             self.text_user.yview('end')
             self.text_user.config(state='disabled')
             client.close()
-
+    
     #========register=========
     def checkRegister(self,nickname,password):
+        salt = "5gz"
+        
         for line in open("data/accounts.txt","r").readlines():
             account_info = line.split()
             if nickname==account_info[0]:
@@ -231,7 +290,10 @@ class FirstScreen(tk.Tk):
         if self.checkRegister(nickname,password)==True:
             client.send('complete'.encode('utf-8'))
             file = open("data/accounts.txt","a")
-            file.write(f"\n{nickname} {password}")
+            salt = "5gz"
+            reg_password = password+salt
+            reg_password = hashlib.md5(reg_password.encode())
+            file.write(f"\n{nickname} {reg_password.hexdigest()}")
 
             self.text_area.config(state='normal')
             self.text_area.insert('end',"User register\n")
@@ -266,7 +328,7 @@ class FirstScreen(tk.Tk):
                 nickname= client.recv(1024).decode('utf-8')
                 password= client.recv(1024).decode('utf-8')
                 option  = client.recv(1024).decode('utf-8')
-                print(option,nickname,password)
+                # print(option,nickname,password)
             except:
                 self.text_user.config(state='normal')
                 self.text_user.insert('end',f"{address} disconnected\n")
@@ -276,6 +338,8 @@ class FirstScreen(tk.Tk):
                 continue
             if option=='login': self.ProcessLogin(nickname,password,client,address)
             if option=='register': self.ProcessRegister(nickname,password,client,address)
+            if len(nicknames)>0: self.setInterval(10,self.update)
+            
 
             
        

@@ -178,7 +178,12 @@ class FirstScreen(tk.Tk):
                 messagebox.showerror("Error","Username or Password incorrect")
                 client.close()
             else:
-                Clinet(self,self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
+                if result == 'logged':
+                    self.txt_user.delete(0, END)
+                    self.txt_pass.delete(0, END)
+                    messagebox.showerror("Error","Username is logged in")
+                    client.close()
+                else: Clinet(self,self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
             # if self.checkLogin(nicknameClient,passwordClient)==1:
                 
             #     Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
@@ -249,44 +254,44 @@ class Clinet(tk.Canvas):
 #----------------------------------SET COUNTRY---------------------------------------------
 #combo=ttk.Combobox(self.parent)
         self.combo =ttk.Combobox(self.parent)
- 
-        self.combo['values']= (" World "," USA "," India "," Brazil "," France "," Russia ",
-        " Turkey","UK "," Argentina "," Colombia "," Italy "," Spain "," Germany",
-        "Iran "," Poland "," Mexico "," Indonesia "," Ukraine "," South Africa",
-        "Peru "," Netherlands "," Czechia "," Chile "," Philippines "," Canada",
-        "Iraq "," Sweden "," Belgium "," Romania "," Bangladesh "," Pakistan",
-        "Portugal "," Israel "," Japan "," Hungary "," Malaysia "," Jordan",
-        "Serbia "," Switzerland "," Austria "," Nepal "," UAE "," Lebanon",
-        "Morocco "," Saudi Arabia "," Ecuador "," Tunisia "," Bolivia "," Kazakhstan",
-        "Paraguay "," Greece "," Belarus "," Bulgaria "," Panama "," Slovakia",
-        "Costa Rica "," Uruguay "," Georgia "," Kuwait "," Croatia "," Azerbaijan",
-        "Dominican Republic "," Palestine "," Guatemala "," Thailand "," Denmark "," Egypt",
-        "Venezuela "," Oman "," Lithuania "," Ethiopia "," Ireland "," Honduras",
-        "Sri Lanka "," Bahrain "," Slovenia "," Moldova "," Armenia "," Qatar",
-        "Cuba "," Bosnia "," Herzegovina "," Libya "," Kenya "," Myanmar "," Zambia",
-        "Nigeria "," S"," Korea "," North Macedonia "," Algeria "," Latvia "," Kyrgyzstan",
-        "Norway "," Albania "," Mongolia "," Estonia "," Afghanistan "," Uzbekistan",
-        "Montenegro "," Namibia "," Finland "," Ghana "," Uganda "," Mozambique",
-        "Cameroon "," Cyprus "," El Salvador "," Maldives "," Botswana "," Luxembourg",
-        "Singapore "," Zimbabwe "," Cambodia "," Jamaica "," Ivory Coast "," Rwanda",
-        "Senegal "," DRC "," Madagascar "," Angola "," Malawi "," Sudan",
-        "Trinidad "," Tobago "," Cabo Verde "," Réunion "," Australia "," Malta "," French Guiana",
-        "Syria "," Gabon "," Guinea "," Vietnam "," Suriname "," Mauritania",
-        "Guyana "," Eswatini "," Mayotte "," Haiti "," French Polynesia "," Papua New Guinea",
-        "Guadeloupe "," Seychelles "," Taiwan "," Somalia "," Mali "," Togo",
-        "Andorra "," Tajikistan "," Burkina Faso "," Belize "," Bahamas "," Congo",
-        "Martinique "," Curaçao "," Hong Kong "," Lesotho "," Djibouti "," Aruba",
-        "South Sudan "," Timor-Leste "," Equatorial Guinea "," Nicaragua "," Benin "," Fiji",
-        "CAR "," Yemen "," Iceland "," Eritrea "," Gambia "," Sierra Leone",
-        "Burundi "," Niger "," Saint Lucia "," San Marino "," Liberia "," Chad",
-        "Channel Islands "," Gibraltar "," Barbados "," Comoros "," Guinea-Bissau "," Liechtenstein",
-        "New Zealand "," Sint Maarten "," Monaco "," Bermuda "," Laos "," Turks "," Caicos",
-        "Sao Tome "," Principe "," Saint Martin "," Bhutan "," St"," Vincent Grenadines "," Mauritius "," Caribbean Netherlands",
-        "Isle of Man "," Antigua "," Barbuda "," St"," Barth "," Faeroe Islands "," British Virgin Islands "," Diamond Princess",
-        "Cayman Islands "," Saint Kitts "," Nevis "," Tanzania "," Wallis "," Futuna "," Brunei "," Dominica",
-        "Grenada "," New Caledonia "," Anguilla "," Falkland Islands "," Macao "," Greenland",
-        "Vatican City "," Saint Pierre Miquelon "," Montserrat "," Solomon Islands "," Western Sahara "," MS Zaandam",
-        "Vanuatu "," Marshall Islands "," Samoa "," Saint Helena "," Micronesia "," China")
+
+        self.combo['values']= ("World","USA","India","Brazil","France","Russia",
+        "Turkey","UK","Argentina","Colombia","Italy","Spain","Germany",
+        "Iran","Poland","Mexico","Indonesia","Ukraine","South Africa",
+        "Peru","Netherlands","Czechia","Chile","Philippines","Canada",
+        "Iraq","Sweden","Belgium","Romania","Bangladesh","Pakistan",
+        "Portugal","Israel","Japan","Hungary","Malaysia","Jordan",
+        "Serbia","Switzerland","Austria","Nepal","UAE","Lebanon",
+        "Morocco","Saudi Arabia","Ecuador","Tunisia","Bolivia","Kazakhstan",
+        "Paraguay","Greece","Belarus","Bulgaria","Panama","Slovakia",
+        "Costa Rica","Uruguay","Georgia","Kuwait","Croatia","Azerbaijan",
+        "Dominican Republic","Palestine","Guatemala","Thailand","Denmark","Egypt",
+        "Venezuela","Oman","Lithuania","Ethiopia","Ireland","Honduras",
+        "Sri Lanka","Bahrain","Slovenia","Moldova","Armenia","Qatar",
+        "Cuba","Bosnia and Herzegovina","Libya","Kenya","Myanmar","Zambia",
+        "Nigeria","S. Korea","North Macedonia","Algeria","Latvia","Kyrgyzstan",
+        "Norway","Albania","Mongolia","Estonia","Afghanistan","Uzbekistan",
+        "Montenegro","Namibia","Finland","Ghana","Uganda","Mozambique",
+        "Cameroon","Cyprus","El Salvador","Maldives","Botswana","Luxembourg",
+        "Singapore","Zimbabwe","Cambodia","Jamaica","Ivory Coast","Rwanda",
+        "Senegal","DRC","Madagascar","Angola","Malawi","Sudan",
+        "Trinidad and Tobago","Cabo Verde","Réunion","Australia","Malta","French Guiana",
+        "Syria","Gabon","Guinea","Vietnam","Suriname","Mauritania",
+        "Guyana","Eswatini","Mayotte","Haiti","French Polynesia","Papua New Guinea",
+        "Guadeloupe","Seychelles","Taiwan","Somalia","Mali","Togo",
+        "Andorra","Tajikistan","Burkina Faso","Belize","Bahamas","Congo",
+        "Martinique","Curaçao","Hong Kong","Lesotho","Djibouti","Aruba",
+        "South Sudan","Timor-Leste","Equatorial Guinea","Nicaragua","Benin","Fiji",
+        "CAR","Yemen","Iceland","Eritrea","Gambia","Sierra Leone",
+        "Burundi","Niger","Saint Lucia","San Marino","Liberia","Chad",
+        "Channel Islands","Gibraltar","Barbados","Comoros","Guinea-Bissau","Liechtenstein",
+        "New Zealand","Sint Maarten","Monaco","Bermuda","Laos","Turks and Caicos",
+        "Sao Tome and Principe","Saint Martin","Bhutan","St. Vincent Grenadines","Mauritius","Caribbean Netherlands",
+        "Isle of Man","Antigua and Barbuda","St. Barth","Faeroe Islands","British Virgin Islands","Diamond Princess",
+        "Cayman Islands","Saint Kitts and Nevis","Tanzania","Wallis and Futuna","Brunei","Dominica",
+        "Grenada","New Caledonia","Anguilla","Falkland Islands","Macao","Greenland",
+        "Vatican City","Saint Pierre Miquelon","Montserrat","Solomon Islands","Western Sahara","MS Zaandam",
+        "Vanuatu","Marshall Islands","Samoa","Saint Helena","Micronesia","China")
          
         self.combo.current(1) 
         self.combo.place(x=350,y=550)
@@ -367,7 +372,7 @@ class Clinet(tk.Canvas):
         self.text_user.place(x=0,y=0,width=400,height=400)
     def choose_country(self):
         self.country=self.combo.get()
-        self.country="Tatol Cases in"+self.country
+        self.country="/covid "+self.country
         name_country = f"{self.nickname} : {self.country}\n"
         self.sock.send(name_country.encode('utf-8'))
         
