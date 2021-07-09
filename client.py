@@ -50,7 +50,7 @@ class FirstScreen(tk.Tk):
         
         tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=210)
         #Enter Pass
-        self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
+        self.txt_pass=tk.Entry(self.first_frame,show="*",font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
         tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#FAFAFA",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
@@ -78,7 +78,7 @@ class FirstScreen(tk.Tk):
                 
         tk.Label(msg,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=210)
         #create Pass
-        self.acc_pass=tk.Entry(msg,font=("times new roman",15),bg="lightgray")
+        self.acc_pass=tk.Entry(msg,show="*",font=("times new roman",15),bg="lightgray")
         self.acc_pass.place(x=30,y=240,width=300,height=35)
 
                 
