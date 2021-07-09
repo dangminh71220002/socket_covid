@@ -17,6 +17,8 @@ from tkinter import *
 from PIL import Image,ImageTk
 import emoji
 import tkinter as tk
+import urllib, json
+import urllib.request as ur
 
 HOST = '127.0.0.1'
 PORT = 80
@@ -98,20 +100,55 @@ class FirstScreen(tk.Tk):
 # send mess of server to clients          
     def broadcast(self,message):
         for client in clients:
+            
             client.send(message)
+
+    def getdataCovid(self):
+        url = 'https://coronavirus-19-api.herokuapp.com/countries'
+        response = ur.urlopen(url)
+        data = json.loads(response.read())
+        with open('data.json', 'w') as f:
+            json.dump(data, f)
+
+    def commandCovid(self):
+        self.getdataCovid()
+
+    def getCountry(self,client):
+        f= open('data.json',)
+        data = json.load(f)
+        num =0
+        mess=''
+        for i in data:
+            if (num==0): num+=1
+            else:
+                if num==6:
+                    mess+=i['country']+'.\n'
+                    client.send(mess.encode('utf-8'))
+                    mess=''
+                    num=1
+                else:
+                    mess+=i['country']+' , '
+                    num+=1
 
     def handle(self,client): 
          while True :
             try:
-                message=client.recv(1024)
-                print(message)
-                self.text_area.config(state='normal')
-                self.text_area.insert('end',"User chat\n")
-                self.text_area.insert('end',message)
-                self.text_area.yview('end')
-                self.text_area.config(state='disabled')
-                
-                self.broadcast(message)
+                message = client.recv(1024).decode('utf-8')
+                temp = message.split(':')
+                covid = 'covid'
+                country = 'country'
+                if temp[1][1]!='/':
+                    self.text_area.config(state='normal')
+                    self.text_area.insert('end',"User chat\n")
+                    self.text_area.insert('end',message)
+                    self.text_area.yview('end')
+                    self.text_area.config(state='disabled')
+                    self.broadcast(message.encode('utf-8'))
+                else:
+                    if country in temp[1]:
+                        self.getCountry(client)
+                    if (covid in temp[1]):
+                        print('456')
             except:
                 index = clients.index(client)
                 clients.remove(client)
@@ -159,7 +196,10 @@ class FirstScreen(tk.Tk):
             self.text_area.yview('end')
             self.text_area.config(state='disabled')
 
-
+            self.text_user.config(state='normal')
+            self.text_user.insert('end',f"User:{nickname}\n")
+            self.text_user.yview('end')
+            self.text_user.config(state='disabled')
 
             self.text_user.config(state='normal')
             self.text_user.insert('end',f"NICKNAME of  the clients is: {nickname}\n")
