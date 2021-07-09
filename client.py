@@ -1,12 +1,11 @@
 import socket
 import tkinter as tk
-from PIL import Image, ImageTk
 from tkinter import ttk
+from PIL import Image, ImageTk
 from tkinter import filedialog
 from tkinter import messagebox
-import pickle
+from tkinter.ttk import *
 from datetime import datetime
-import os
 import threading
 import socket
 import threading
@@ -247,6 +246,54 @@ class Clinet(tk.Canvas):
         chat_msg=Image.open("image/covidmini.jpg")
         chat_msg=chat_msg.resize((50,50),Image.ANTIALIAS)
         self.chat_msg=ImageTk.PhotoImage(chat_msg)
+#----------------------------------SET COUNTRY---------------------------------------------
+#combo=ttk.Combobox(self.parent)
+        self.combo =ttk.Combobox(self.parent)
+ 
+        self.combo['values']= (" World "," USA "," India "," Brazil "," France "," Russia ",
+        " Turkey","UK "," Argentina "," Colombia "," Italy "," Spain "," Germany",
+        "Iran "," Poland "," Mexico "," Indonesia "," Ukraine "," South Africa",
+        "Peru "," Netherlands "," Czechia "," Chile "," Philippines "," Canada",
+        "Iraq "," Sweden "," Belgium "," Romania "," Bangladesh "," Pakistan",
+        "Portugal "," Israel "," Japan "," Hungary "," Malaysia "," Jordan",
+        "Serbia "," Switzerland "," Austria "," Nepal "," UAE "," Lebanon",
+        "Morocco "," Saudi Arabia "," Ecuador "," Tunisia "," Bolivia "," Kazakhstan",
+        "Paraguay "," Greece "," Belarus "," Bulgaria "," Panama "," Slovakia",
+        "Costa Rica "," Uruguay "," Georgia "," Kuwait "," Croatia "," Azerbaijan",
+        "Dominican Republic "," Palestine "," Guatemala "," Thailand "," Denmark "," Egypt",
+        "Venezuela "," Oman "," Lithuania "," Ethiopia "," Ireland "," Honduras",
+        "Sri Lanka "," Bahrain "," Slovenia "," Moldova "," Armenia "," Qatar",
+        "Cuba "," Bosnia "," Herzegovina "," Libya "," Kenya "," Myanmar "," Zambia",
+        "Nigeria "," S"," Korea "," North Macedonia "," Algeria "," Latvia "," Kyrgyzstan",
+        "Norway "," Albania "," Mongolia "," Estonia "," Afghanistan "," Uzbekistan",
+        "Montenegro "," Namibia "," Finland "," Ghana "," Uganda "," Mozambique",
+        "Cameroon "," Cyprus "," El Salvador "," Maldives "," Botswana "," Luxembourg",
+        "Singapore "," Zimbabwe "," Cambodia "," Jamaica "," Ivory Coast "," Rwanda",
+        "Senegal "," DRC "," Madagascar "," Angola "," Malawi "," Sudan",
+        "Trinidad "," Tobago "," Cabo Verde "," Réunion "," Australia "," Malta "," French Guiana",
+        "Syria "," Gabon "," Guinea "," Vietnam "," Suriname "," Mauritania",
+        "Guyana "," Eswatini "," Mayotte "," Haiti "," French Polynesia "," Papua New Guinea",
+        "Guadeloupe "," Seychelles "," Taiwan "," Somalia "," Mali "," Togo",
+        "Andorra "," Tajikistan "," Burkina Faso "," Belize "," Bahamas "," Congo",
+        "Martinique "," Curaçao "," Hong Kong "," Lesotho "," Djibouti "," Aruba",
+        "South Sudan "," Timor-Leste "," Equatorial Guinea "," Nicaragua "," Benin "," Fiji",
+        "CAR "," Yemen "," Iceland "," Eritrea "," Gambia "," Sierra Leone",
+        "Burundi "," Niger "," Saint Lucia "," San Marino "," Liberia "," Chad",
+        "Channel Islands "," Gibraltar "," Barbados "," Comoros "," Guinea-Bissau "," Liechtenstein",
+        "New Zealand "," Sint Maarten "," Monaco "," Bermuda "," Laos "," Turks "," Caicos",
+        "Sao Tome "," Principe "," Saint Martin "," Bhutan "," St"," Vincent Grenadines "," Mauritius "," Caribbean Netherlands",
+        "Isle of Man "," Antigua "," Barbuda "," St"," Barth "," Faeroe Islands "," British Virgin Islands "," Diamond Princess",
+        "Cayman Islands "," Saint Kitts "," Nevis "," Tanzania "," Wallis "," Futuna "," Brunei "," Dominica",
+        "Grenada "," New Caledonia "," Anguilla "," Falkland Islands "," Macao "," Greenland",
+        "Vatican City "," Saint Pierre Miquelon "," Montserrat "," Solomon Islands "," Western Sahara "," MS Zaandam",
+        "Vanuatu "," Marshall Islands "," Samoa "," Saint Helena "," Micronesia "," China")
+         
+        self.combo.current(1) 
+        self.combo.place(x=350,y=550)
+        tk.Label(self.parent,text="Total Cases in",font=("Impact",10),fg="white",bg="#010E1E").place(x=200,y=550)
+        tk.Button(self.parent,text="Search",command=self.choose_country, borderwidth = 0).place(x=500,y=550)
+
+
         
         self.nickname = txt_user
         self.password = txt_pass
@@ -263,19 +310,19 @@ class Clinet(tk.Canvas):
     
 
         self.text_area = tk.scrolledtext.ScrolledText(self.parent)
-        self.text_area.pack(padx=20, pady=5)
+        self.text_area.place(x=200, y=5)
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
     
-        tk.Label(self.parent,image=self.chat_msg,bg="#010E1E").pack()
+        tk.Label(self.parent,image=self.chat_msg,bg="#010E1E").place(x=500,y=400)
 
         self.input_area = tk.Text(self.parent, height=3)
         self.input_area.config(font=("Transformers Movie",10))
-        self.input_area.pack(padx=20, pady=5)
+        self.input_area.place(x=200, y=470)
 
  
         
-        self.send_label.pack()
+        self.send_label.place(x=800,y=470)
   
 # Create def of button and set image
         
@@ -318,6 +365,13 @@ class Clinet(tk.Canvas):
         self.text_user.config(state='disabled',fg="#00B7FE")
         self.text_user.configure(bg="white")
         self.text_user.place(x=0,y=0,width=400,height=400)
+    def choose_country(self):
+        self.country=self.combo.get()
+        self.country="Tatol Cases in"+self.country
+        name_country = f"{self.nickname} : {self.country}\n"
+        self.sock.send(name_country.encode('utf-8'))
+        
+
 #-------------------------------------------------------------------------------
     def write(self):
         if(self.input_area.get('1.0', 'end') != '\n' ):
