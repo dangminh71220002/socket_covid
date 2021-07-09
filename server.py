@@ -79,7 +79,7 @@ class FirstScreen(tk.Tk):
         
         self.mainloop()
 
-#--------------- function of KICK
+#--------------- function of KICK-------------------------
     def kickClient(self,name):
         if name in nicknames:
             name_index= nicknames.index(name)
@@ -97,7 +97,7 @@ class FirstScreen(tk.Tk):
         self.kickClient(name_kick)
         
 
-#================================
+#===========================================================
 # send mess of server to clients          
     def broadcast(self,message):
         for client in clients:
