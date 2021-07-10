@@ -28,11 +28,12 @@ except:
 class FirstScreen(tk.Tk):
     def __init__(self):
         super().__init__()
-        screen_width, screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
-        self.x_co = int((screen_width / 2) - (1000 / 2))
-        self.y_co = int((screen_height / 2) - (600 / 2)) - 80
-        self.geometry(f"1000x600+{self.x_co}+{self.y_co}")
-        # self.geometry("1000x600")
+        # screen_width, screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
+        # self.x_co = int((screen_width / 2) - (1000 / 2))
+        # self.y_co = int((screen_height / 2) - (600 / 2)) - 80
+        # self.geometry(f"1000x600+{self.x_co}+{self.y_co}")
+        
+        self.geometry("1000x600")
         self.title("Login System")
         self.resizable(False,False)
         self.first_frame= tk.Frame(self,bg="blue")
@@ -224,7 +225,7 @@ class Clinet(tk.Canvas):
 
         x_co = int((screen_width / 2) - (1010 / 2))
         y_co = int((screen_height / 2) - (650 / 2)) - 80
-        self.parent.geometry(f"1010x650+{x_co}+{y_co}")
+        self.parent.geometry("1000x600")
         # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.sock.connect((host,port))
         
@@ -237,15 +238,15 @@ class Clinet(tk.Canvas):
         file.add_command(label="Green-Red",command=self.backG)
         menu.add_cascade(label="Change Background", menu=file)
         
-        edit = Menu(menu)
-        edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
-        edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
-        edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
-        edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
-        menu.add_cascade(label="Emoji", menu=edit)
-        User_manual=Menu(menu)
-        User_manual.add_command(label="User manual",command=self.User_manual)
-        menu.add_cascade(label="User manual", menu=User_manual)
+        # edit = Menu(menu)
+        # edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
+        # edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
+        # edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
+        # edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
+        # menu.add_cascade(label="Emoji", menu=edit)
+        # User_manual=Menu(menu)
+        # User_manual.add_command(label="User manual",command=self.User_manual)
+        # menu.add_cascade(label="User manual", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
@@ -433,7 +434,7 @@ class Clinet(tk.Canvas):
                 break 
     def first_screen(self):
         self.destroy()
-        self.parent.geometry(f"1000x600+{self.parent.x_co}+{self.parent.y_co}")
+        self.parent.geometry("1000x600")
         self.parent.first_frame.pack(fill="both", expand=True)
         self.window = None
     def on_closing(self):
