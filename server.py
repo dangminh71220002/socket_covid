@@ -88,14 +88,18 @@ class FirstScreen(tk.Tk):
         self.protocol("WM_DELETE_WINDOW",self.stop)
         self.mainloop()
 
-#--------------- function of KICK
+#--------------- function of KICK-------------------------
     def kickClient(self,name):
         global Kick
         if name in nicknames:
             Kick = True
             name_index= nicknames.index(name)
             client_kick=clients[name_index]
-            clients.remove(client_kick)       
+            clients.remove(client_kick)
+            self.text_user.config(state='normal')
+            self.text_user.insert('end',f"{name} were KICK\n")
+            self.text_user.yview('end')
+            self.text_user.config(state='disabled')
             client_kick.send("You were kicked by admin ".encode('utf-8'))   
             client_kick.close()
             nicknames.remove(name)
@@ -113,7 +117,7 @@ class FirstScreen(tk.Tk):
         self.kickClient(name_kick)
         
 
-#================================
+#===========================================================
 # send mess of server to clients          
     def broadcast(self,message):
         for client in clients:

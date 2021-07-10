@@ -59,7 +59,7 @@ class FirstScreen(tk.Tk):
         
         tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=210)
         #Enter Pass
-        self.txt_pass=tk.Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
+        self.txt_pass=tk.Entry(self.first_frame,show="*",font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
         tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#FAFAFA",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
@@ -87,7 +87,7 @@ class FirstScreen(tk.Tk):
                 
         tk.Label(msg,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="white").place(x=30,y=210)
         #create Pass
-        self.acc_pass=tk.Entry(msg,font=("times new roman",15),bg="lightgray")
+        self.acc_pass=tk.Entry(msg,show="*",font=("times new roman",15),bg="lightgray")
         self.acc_pass.place(x=30,y=240,width=300,height=35)
 
                 
@@ -237,15 +237,15 @@ class Clinet(tk.Canvas):
         file.add_command(label="Green-Red",command=self.backG)
         menu.add_cascade(label="Change Background", menu=file)
         
-        # edit = Menu(menu)
-        # edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
-        # edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
-        # edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
-        # edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
-        # menu.add_cascade(label="Emoji", menu=edit)
-        # User_manual=Menu(menu)
-        # User_manual.add_command(label="User manual",command=self.User_manual)
-        # menu.add_cascade(label="User manual", menu=User_manual)
+        edit = Menu(menu)
+        edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
+        edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
+        edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
+        edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
+        menu.add_cascade(label="Emoji", menu=edit)
+        User_manual=Menu(menu)
+        User_manual.add_command(label="User manual",command=self.User_manual)
+        menu.add_cascade(label="User manual", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
