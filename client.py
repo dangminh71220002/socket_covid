@@ -20,10 +20,19 @@ import tkinter as tk
 HOST = '127.0.0.1'
 PORT = 80
 
+try:
+    from ctypes import windll
+    windll.shcore.SetProcessDpiAwareness(1)
+except:
+    pass
 class FirstScreen(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("1000x600")
+        screen_width, screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.x_co = int((screen_width / 2) - (1000 / 2))
+        self.y_co = int((screen_height / 2) - (600 / 2)) - 80
+        self.geometry(f"1000x600+{self.x_co}+{self.y_co}")
+        # self.geometry("1000x600")
         self.title("Login System")
         self.resizable(False,False)
         self.first_frame= tk.Frame(self,bg="blue")
@@ -129,6 +138,8 @@ class FirstScreen(tk.Tk):
                 client.close()
             else:
                 messagebox.showinfo("Congratulations","Successful account registration")
+                client.close()
+
 
 
 
@@ -183,7 +194,7 @@ class FirstScreen(tk.Tk):
                     self.txt_pass.delete(0, END)
                     messagebox.showerror("Error","Username is logged in")
                     client.close()
-                else: Clinet(self,self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
+                else: Clinet(self, self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
             # if self.checkLogin(nicknameClient,passwordClient)==1:
                 
             #     Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
@@ -199,7 +210,7 @@ class FirstScreen(tk.Tk):
 
 
 class Clinet(tk.Canvas):
-    def __init__(self,parent,first_frame,client,txt_user,txt_pass,host,port):
+    def __init__(self, parent, first_frame,client,txt_user,txt_pass,host,port):
         super().__init__(parent)
         self.window = 'ChatScreen'
 
@@ -207,7 +218,13 @@ class Clinet(tk.Canvas):
         self.first_frame.pack_forget()
         self.sock = client
         self.parent = parent
+        self.parent.bind('<Return>', lambda e: self.write(e))
+        self.parent.protocol("WM_DELETE_WINDOW", self.on_closing)
+        screen_width, screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
 
+        x_co = int((screen_width / 2) - (1010 / 2))
+        y_co = int((screen_height / 2) - (650 / 2)) - 80
+        self.parent.geometry(f"1010x650+{x_co}+{y_co}")
         # self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # self.sock.connect((host,port))
         
@@ -220,32 +237,34 @@ class Clinet(tk.Canvas):
         file.add_command(label="Green-Red",command=self.backG)
         menu.add_cascade(label="Change Background", menu=file)
         
-        edit = Menu(menu)
-        edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
-        edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
-        edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
-        edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
-        menu.add_cascade(label="Emoji", menu=edit)
-        User_manual=Menu(menu)
-        User_manual.add_command(label="User manual",command=self.User_manual)
-        menu.add_cascade(label="User manual", menu=User_manual)
+        # edit = Menu(menu)
+        # edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
+        # edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
+        # edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
+        # edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
+        # menu.add_cascade(label="Emoji", menu=edit)
+        # User_manual=Menu(menu)
+        # User_manual.add_command(label="User manual",command=self.User_manual)
+        # menu.add_cascade(label="User manual", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
+
+
         #SET BACKGROUND
         background = Image.open("image/covid.jpg")
         background = background.resize((1450, 700), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
        
         
-        tk.Label(self.parent, image=self.background).place(x=0, y=0)
+        tk.Label(self, image=self.background).place(x=0, y=0)
 
 
         #BUTTON SEND
         send_label=Image.open("image/send.jpg")
         send_label=send_label.resize((50,50),Image.ANTIALIAS)
         send_label=ImageTk.PhotoImage(send_label)
-        self.send_label = tk.Button(self.parent, image=send_label,command=self.write, borderwidth = 0)
+        self.send_label = tk.Button(self, image=send_label,command=self.write, borderwidth = 0)
 
         #Scream Chat
         chat_msg=Image.open("image/covidmini.jpg")
@@ -253,7 +272,7 @@ class Clinet(tk.Canvas):
         self.chat_msg=ImageTk.PhotoImage(chat_msg)
 #----------------------------------SET COUNTRY---------------------------------------------
 #combo=ttk.Combobox(self.parent)
-        self.combo =ttk.Combobox(self.parent)
+        self.combo =ttk.Combobox(self)
 
         self.combo['values']= ("World","USA","India","Brazil","France","Russia",
         "Turkey","UK","Argentina","Colombia","Italy","Spain","Germany",
@@ -295,8 +314,8 @@ class Clinet(tk.Canvas):
          
         self.combo.current(1) 
         self.combo.place(x=350,y=550)
-        tk.Label(self.parent,text="Total Cases in",font=("Impact",10),fg="white",bg="#010E1E").place(x=200,y=550)
-        tk.Button(self.parent,text="Search",command=self.choose_country, borderwidth = 0).place(x=500,y=550)
+        tk.Label(self,text="Total Cases in",font=("Impact",10),fg="white",bg="#010E1E").place(x=200,y=550)
+        tk.Button(self,text="Search",command=self.choose_country, borderwidth = 0).place(x=500,y=550)
 
 
         
@@ -308,20 +327,21 @@ class Clinet(tk.Canvas):
         receive_thread = threading.Thread(target = self.receive)
         gui_thread.start()
         receive_thread.start()
+        self.pack(fill="both", expand=True)
         self.mainloop()
 
     
     def gui_loop(self):
     
 
-        self.text_area = tk.scrolledtext.ScrolledText(self.parent)
+        self.text_area = tk.scrolledtext.ScrolledText(self)
         self.text_area.place(x=200, y=5)
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
     
-        tk.Label(self.parent,image=self.chat_msg,bg="#010E1E").place(x=500,y=400)
+        tk.Label(self,image=self.chat_msg,bg="#010E1E").place(x=500,y=400)
 
-        self.input_area = tk.Text(self.parent, height=3)
+        self.input_area = tk.Text(self, height=3)
         self.input_area.config(font=("Transformers Movie",10))
         self.input_area.place(x=200, y=470)
 
@@ -334,7 +354,7 @@ class Clinet(tk.Canvas):
 
         self.gui_done = True
 
-        self.parent.protocol("WM_DELETE_WINDOW", self.stop)
+        # self.parent.protocol("WM_DELETE_WINDOW", self.stop)
 
     def backG1(self):
         self.text_area.config(state='disabled',fg="#00B7FE")
@@ -378,7 +398,7 @@ class Clinet(tk.Canvas):
         
 
 #-------------------------------------------------------------------------------
-    def write(self):
+    def write(self,event=None):
         if(self.input_area.get('1.0', 'end') != '\n' ):
             message = f"{self.nickname} : {self.input_area.get('1.0', 'end')}"
             self.sock.send(message.encode('utf-8'))
@@ -396,10 +416,7 @@ class Clinet(tk.Canvas):
         while self.running:
             try:
                 message = self.sock.recv(1024).decode('utf-8')
-                if message == 'NICK':
-                    self.sock.send(self.nickname.encode('utf-8'))
-                else:
-                    if self.gui_done:
+                if self.gui_done:
                         self.text_area.config(state='normal')
                         self.text_area.insert('end', message)
                         self.text_area.yview('end')
@@ -410,16 +427,24 @@ class Clinet(tk.Canvas):
                 self.sock.close()
                 break
             except ConnectionResetError:
-                messagebox.showinfo(title='No Connection !', message="Server offline..try connecting again lat1er")
+                messagebox.showinfo(title='No Connection !', message="Server offline..try connecting again later")
                 self.sock.close()
                 self.first_screen()
                 break 
     def first_screen(self):
         self.destroy()
-        self.parent.geometry("1000x600")
+        self.parent.geometry(f"1000x600+{self.parent.x_co}+{self.parent.y_co}")
         self.parent.first_frame.pack(fill="both", expand=True)
         self.window = None
-
+    def on_closing(self):
+        if self.window == 'ChatScreen':
+            res = messagebox.askyesno(title='Warning !',message="Do you really want to disconnect ?")
+            if res:
+                print("ABCDEF")
+                self.sock.close()
+                self.first_screen()
+        else:
+            self.parent.destroy()
 
 
 

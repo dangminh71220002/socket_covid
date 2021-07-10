@@ -8,6 +8,8 @@ import pickle
 from datetime import datetime
 import os
 import threading
+import time
+
 from threading import Timer
 import socket
 import threading
@@ -28,6 +30,10 @@ server.bind((HOST,PORT))
 server.listen(5)
 clients=[]
 nicknames=[] 
+stop = False
+One = True
+isServerstop = False
+Kick = False
 class FirstScreen(tk.Tk):
     def __init__(self,host,port):
         super().__init__()
@@ -48,7 +54,10 @@ class FirstScreen(tk.Tk):
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
         
-
+        menu = Menu(self)
+        self.config(menu=menu)
+        file = Menu(menu)
+        file.add_command(label="Close server")
         receive_thread = threading.Thread(target = self.receive)
         receive_thread.start()
         #---------Lable------------------
@@ -76,18 +85,25 @@ class FirstScreen(tk.Tk):
         self.send=tk.Button(self.first_frame,cursor="hand2",text="SEND",fg="white",bg="#d77337",font=("times new roman",15,),command=self.ServerChat).place(x=1070,y=500,width=60,height=50)
         thread2 = threading.Thread(target=self.ServerChat,args=( ))
         thread2.start() 
-        
+        self.protocol("WM_DELETE_WINDOW",self.stop)
         self.mainloop()
 
 #--------------- function of KICK
     def kickClient(self,name):
+        global Kick
         if name in nicknames:
+            Kick = True
             name_index= nicknames.index(name)
             client_kick=clients[name_index]
             clients.remove(client_kick)       
             client_kick.send("You were kicked by admin ".encode('utf-8'))   
             client_kick.close()
             nicknames.remove(name)
+            self.text_user.config(state='normal')
+            self.text_user.insert('end',f"{name} disconnected\n")
+            self.text_user.yview('end')
+            self.text_user.config(state='disabled')
+            self.broadcast(f"{name} disconnect server".encode('utf-8'))
         
 
     def writeKick(self):
@@ -101,7 +117,6 @@ class FirstScreen(tk.Tk):
 # send mess of server to clients          
     def broadcast(self,message):
         for client in clients:
-            
             client.send(message)
 
     def getdataCovid(self):
@@ -145,28 +160,40 @@ Deaths : {data['deaths']}
 Recover: {data['recovered']}\n'''
             client.send(covid.encode('utf-8'))
         except:
-            client.send(f"No data for {regionTemp} could be found\n".encode('utf-8'))
+            client.send(f"{regionTemp} covid figures could be found\n".encode('utf-8'))
 
-    def setInterval(self,timer, task):
-        isStop = task()
-        if not isStop:
-            Timer(timer, self.setInterval, [timer, task]).start()
+    def set_interval(self,func, sec):
+        sectemp = 0.1
+        i=1
+        while True:
+            func()
+            while (i<=sec/0.1): 
+                time.sleep(sectemp)
+                i+=1
+            i=1
+        
 
     def update(self):
-        url = f"https://coronavirus-19-api.herokuapp.com/countries/world"
+        url = f"https://coronavirus-19-api.herokuapp.com/countries"
+        if len(nicknames)==0: return "out"
+        self.text_area.config(state='normal')
+        self.text_area.insert('end',"Server update covid figures\n")
+        
         try:
             response = ur.urlopen(url)
             data = json.loads(response.read())
-            covid = f'''World covid figures
-Total cases : {data['cases']}
-Today cases : {data['todayCases']}
-Deaths : {data['deaths']}
-Recover: {data['recovered']}\n'''
-            self.broadcast(covid.encode('utf-8'))
+            with open('data.json', 'w') as f:
+                json.dump(data, f)
+            
+            self.text_area.insert('end',f"Done\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
         except:
-            self.broadcast(f"Error".encode('utf-8'))
+            self.text_area.insert('end',f"Error\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
 
-    def handle(self,client): 
+    def handle(self,client):
          while True :
             try:
                 message = client.recv(1024).decode('utf-8')
@@ -195,29 +222,84 @@ Recover: {data['recovered']}\n'''
                         self.getdataCovid()
                         self.getInfoCovid(client,region)
             except:
-                index = clients.index(client)
-                clients.remove(client)
-                client.close()
-                nickname=nicknames[index]
-                nicknames.remove(nickname)
+                global Kick
+                if Kick==False:
+                    index = clients.index(client)
+                    clients.remove(client)
+                    client.close()
+                    nickname=nicknames[index]
+                    self.text_user.config(state='normal')
+                    self.text_user.insert('end',f"{nickname} disconnected\n")
+                    self.text_user.yview('end')
+                    self.text_user.config(state='disabled')
+                    self.broadcast(f"{nickname} disconnect server".encode('utf-8'))
+                    nicknames.remove(nickname)
+                Kick = False
                 break
+        
     #mess's server send to client
     def ServerChat(self):
         index=self.input.get('1.0','end')
         if index!='\n':
-            self.input.delete('1.0','end')
-            inp="server: "+index
-            self.text_area.config(state='normal')
-            self.text_area.insert('end',inp)
-            self.text_area.yview('end')
-            self.text_area.config(state='disabled')
-            self.broadcast(inp.encode('utf-8'))
+            global isServerstop
+            global server
+
+            if index == '/close\n':
+                
+                isServerstop= True
+                self.broadcast('Server offline'.encode('utf-8'))
+                for client in clients:
+                    global Kick
+                    Kick = True
+                    client.close()
+                Kick = True
+                clients.clear()
+                nicknames.clear()
+                if (One==True):
+                    time.sleep(0)
+                server.close()
+            elif index == '/start\n':
+
+                if isServerstop==True:
+                    isServerstop= False
+                    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    server.bind((HOST,PORT))
+                    server.listen(5)
+                    receive_thread = threading.Thread(target = self.receive)
+                    receive_thread.start()
+                else:
+                    self.text_area.config(state='normal')
+                    self.text_area.insert('end',"Server doesn't close\n")
+                    self.text_area.yview('end')
+                    self.text_area.config(state='disabled')
+            else:
+                self.input.delete('1.0','end')
+                inp="server: "+index
+                self.text_area.config(state='normal')
+                self.text_area.insert('end',inp)
+                self.text_area.yview('end')
+                self.text_area.config(state='disabled')
+                self.broadcast(inp.encode('utf-8'))
+
         
 
     def stop(self):
-        self.first_frame.destroy()
-        server.close()
-        exit(0)
+        # thread2.kill()
+        global isServerstop
+        if (isServerstop==0):
+            messagebox.showerror("Error","Stop server before close Window")
+        else:
+        # global stop,CW,One
+        # global thread1
+        # stop = True
+        # if (CW==True):
+        #     if (thread1.is_alive()): thread1.join()
+        #     print("kill threading")
+        # if (One==True):
+        #     time.sleep(0)
+            self.first_frame.destroy()
+        # server.close()
+            exit(0)
 
 
     #-------Login--------
@@ -234,7 +316,6 @@ Recover: {data['recovered']}\n'''
 
     def ProcessLogin(self,nickname,password,client,address):
         if self.checkLogin(nickname,password) == True:
-            
             
             if nickname in nicknames:
                 client.send('logged'.encode('utf-8'))
@@ -300,6 +381,7 @@ Recover: {data['recovered']}\n'''
             self.text_area.insert('end',f"Nick:{nickname}\n")
             self.text_area.yview('end')
             self.text_area.config(state='disabled')
+            client.close()
         else:
             client.send('exists'.encode('utf-8'))
             self.text_user.config(state='normal')
@@ -310,35 +392,44 @@ Recover: {data['recovered']}\n'''
 
 
     def receive(self):
-        while True:
-            client,address  =server.accept()
+        try: 
+            global One
+            while True:
+                client,address  =server.accept()
 
-            self.text_user.config(state='normal')
-            self.text_user.insert('end',f"Connected with{str(address)}\n")
-            self.text_user.yview('end')
-            self.text_user.config(state='disabled')
-
-            if len(clients)==5:
-                client.send('not_allowed'.encode())
-                
-                continue
-            else:
-                client.send('allowed'.encode())
-            try:
-                nickname= client.recv(1024).decode('utf-8')
-                password= client.recv(1024).decode('utf-8')
-                option  = client.recv(1024).decode('utf-8')
-                # print(option,nickname,password)
-            except:
                 self.text_user.config(state='normal')
-                self.text_user.insert('end',f"{address} disconnected\n")
+                self.text_user.insert('end',f"Connected with{str(address)}\n")
                 self.text_user.yview('end')
                 self.text_user.config(state='disabled')
-                client.close()
-                continue
-            if option=='login': self.ProcessLogin(nickname,password,client,address)
-            if option=='register': self.ProcessRegister(nickname,password,client,address)
-            if len(nicknames)>0: self.setInterval(10,self.update)
+
+                if len(clients)==5:
+                    client.send('not_allowed'.encode())
+                
+                    continue
+                else:
+                    client.send('allowed'.encode())
+                try:
+                    nickname= client.recv(1024).decode('utf-8')
+                    password= client.recv(1024).decode('utf-8')
+                    option  = client.recv(1024).decode('utf-8')
+                    # print(option,nickname,password)
+                except:
+                    self.text_user.config(state='normal')
+                    self.text_user.insert('end',f"{address} disconnected\n")
+                    self.text_user.yview('end')
+                    self.text_user.config(state='disabled')
+                    client.close()
+                    break
+                    continue
+                if option=='login': self.ProcessLogin(nickname,password,client,address)
+                if option=='register': self.ProcessRegister(nickname,password,client,address)
+                if len(nicknames)>0 and One == True: 
+                    t = threading.Thread(target=self.set_interval,args=(self.update,10,), daemon=True)
+                    t.start()
+                    One = False
+
+        except socket.error:
+            print("Shutting down")
             
 
             
