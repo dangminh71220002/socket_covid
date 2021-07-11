@@ -101,14 +101,14 @@ class FirstScreen(tk.Tk):
             self.text_user.insert('end',f"{name} were KICK\n")
             self.text_user.yview('end')
             self.text_user.config(state='disabled')
-            client_kick.send("You were kicked by admin ".encode('utf-8'))   
+            client_kick.send("You were kicked by admin \n".encode('utf-8'))   
             client_kick.close()
             nicknames.remove(name)
             self.text_user.config(state='normal')
             self.text_user.insert('end',f"{name} disconnected\n")
             self.text_user.yview('end')
             self.text_user.config(state='disabled')
-            self.broadcast(f"{name} disconnect server".encode('utf-8'))
+            self.broadcast(f"{name} disconnect server\n".encode('utf-8'))
         
 
     def writeKick(self):
@@ -239,7 +239,7 @@ class FirstScreen(tk.Tk):
                     self.text_user.insert('end',f"{nickname} disconnected\n")
                     self.text_user.yview('end')
                     self.text_user.config(state='disabled')
-                    self.broadcast(f"{nickname} disconnect server".encode('utf-8'))
+                    self.broadcast(f"{nickname} disconnect server\n".encode('utf-8'))
                     nicknames.remove(nickname)
                 Kick = False
                 break
@@ -254,7 +254,7 @@ class FirstScreen(tk.Tk):
             if index == '/close\n':
                 
                 isServerstop= True
-                self.broadcast('Server offline'.encode('utf-8'))
+                self.broadcast('Server offline\n'.encode('utf-8'))
                 for client in clients:
                     global Kick
                     Kick = True
@@ -331,31 +331,32 @@ class FirstScreen(tk.Tk):
                 self.text_user.yview('end')
                 self.text_user.config(state='disabled')
                 client.close()
-                return
-            client.send('true'.encode('utf-8'))
-            nicknames.append(nickname)    
-            clients.append(client) 
-            self.text_area.config(state='normal')
-            self.text_area.insert('end',"User login\n")
-            self.text_area.insert('end',f"Nick:{nickname}\n")
-            self.text_area.yview('end')
-            self.text_area.config(state='disabled')
+                
+            else:
+                client.send('true'.encode('utf-8'))
+                nicknames.append(nickname)    
+                clients.append(client) 
+                self.text_area.config(state='normal')
+                self.text_area.insert('end',"User login\n")
+                self.text_area.insert('end',f"Nick:{nickname}\n")
+                self.text_area.yview('end')
+                self.text_area.config(state='disabled')
 
-            self.text_user.config(state='normal')
-            self.text_user.insert('end',f"User:{nickname}\n")
-            self.text_user.yview('end')
-            self.text_user.config(state='disabled')
+                self.text_user.config(state='normal')
+                self.text_user.insert('end',f"User:{nickname}\n")
+                self.text_user.yview('end')
+                self.text_user.config(state='disabled')
 
-            self.text_user.config(state='normal')
-            self.text_user.insert('end',f"NICKNAME of  the clients is: {nickname}\n")
-            self.text_user.yview('end')
-            self.text_user.config(state='disabled')
+                self.text_user.config(state='normal')
+                self.text_user.insert('end',f"NICKNAME of  the clients is: {nickname}\n")
+                self.text_user.yview('end')
+                self.text_user.config(state='disabled')
 
 
-            self.broadcast(f"{nickname} connected to server \n".encode('utf-8'))
-            client.send(f"Connected to server \n".encode("utf-8"))
-            thread1 = threading.Thread(target= self.handle, args=(client,) )
-            thread1.start()
+                self.broadcast(f"{nickname} connected to server \n".encode('utf-8'))
+                client.send(f"Connected to server \n".encode("utf-8"))
+                thread1 = threading.Thread(target= self.handle, args=(client,) )
+                thread1.start()
         else:
             client.send('wrong_pass'.encode('utf-8'))
             self.text_user.config(state='normal')
