@@ -16,6 +16,7 @@ from tkinter import *
 from PIL import Image,ImageTk
 import emoji
 import tkinter as tk
+from datetime import datetime
 
 HOST = '127.0.0.1'
 PORT = 80
@@ -450,3 +451,4 @@ class Clinet(tk.Canvas):
 
 
 FirstScreen()
+
