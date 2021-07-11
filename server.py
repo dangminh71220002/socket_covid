@@ -49,6 +49,18 @@ class FirstScreen(tk.Tk):
         tk.Label(self.first_frame, image=self.background).place(x=0, y=0)
 
 
+        red = Image.open("image/red.jpg")
+        red = red.resize((30, 20), Image.ANTIALIAS)
+        self.red = ImageTk.PhotoImage(red)
+        #tk.Label(self.first_frame, image=self.red).place(x=700, y=20)
+       
+        green = Image.open("image/Green.jpg")
+        green = green.resize((30, 20), Image.ANTIALIAS)
+        self.green = ImageTk.PhotoImage(green)
+        tk.Label(self.first_frame, image=self.green).place(x=680, y=25)
+
+
+
         #Text area chat of clientS and server
         self.text_area = tk.scrolledtext.ScrolledText(self.first_frame)
         self.text_area.place(x=475,y=85)
@@ -69,6 +81,8 @@ class FirstScreen(tk.Tk):
         #===================================================
         #button Kick clients
         self.button_Kick=tk.Button(self.first_frame,cursor="hand2",text="KICK",fg="white",bg="#d77337",font=("times new roman",15),command=self.writeKick).place(x=200,y=480,width=60,height=30)
+        self.button_start=tk.Button(self.first_frame,cursor="hand2",text="START",fg="white",bg="green",font=("times new roman",15),command=self.start).place(x=1000,y=20,width=80,height=30)
+        self.button_Kick=tk.Button(self.first_frame,cursor="hand2",text="CLOSE",fg="white",bg="red",font=("times new roman",15),command=self.close).place(x=100,y=20,width=80,height=30)
         #text area status of client
         self.text_user = tk.scrolledtext.ScrolledText(self.first_frame)
         self.text_user.config(state='disabled',fg="#00B7FE")
@@ -86,7 +100,7 @@ class FirstScreen(tk.Tk):
         self.send=tk.Button(self.first_frame,cursor="hand2",text="SEND",fg="white",bg="#d77337",font=("times new roman",15,),command=self.ServerChat).place(x=1070,y=500,width=60,height=50)
         thread2 = threading.Thread(target=self.ServerChat,args=( ))
         thread2.start() 
-        self.protocol("WM_DELETE_WINDOW",self.stop)
+        self.protocol("WM_DELETE_WINDOW",self.stopScream)
         self.mainloop()
 
 #--------------- function of KICK-------------------------
@@ -288,7 +302,52 @@ class FirstScreen(tk.Tk):
                 self.text_area.config(state='disabled')
                 self.broadcast(inp.encode('utf-8'))
 
+    def start(self):
+        global server
+        global isServerstop
+        if isServerstop==True:
+            isServerstop= False
+            tk.Label(self.first_frame, image=self.green).place(x=680, y=25)
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            server.bind((HOST,PORT))
+            server.listen(5)
+            receive_thread = threading.Thread(target = self.receive)
+            receive_thread.start()
+        else:
+            messagebox.showerror("Warning","SERVER WAS START ! ")
+    def close(self):
+            global server
+            global isServerstop
+            if isServerstop==False:
+                isServerstop= True
+                tk.Label(self.first_frame, image=self.red).place(x=680, y=25)
+                self.broadcast('Server offline'.encode('utf-8'))
+                for client in clients:
+                    global Kick
+                    Kick = True
+                    client.close()
+                Kick = True
+                clients.clear()
+                nicknames.clear()
+                if (One==True):
+                    time.sleep(0)
+                server.close()
+            else :
+                messagebox.showerror("Warning","SERVER WAS STOP ! ")
+    def stopScream(self):
         
+        res = messagebox.askyesno(title='Warning !',message="Do you really want to disconnect ?")
+        if res:
+            self.broadcast('Server offline'.encode('utf-8'))
+
+            for client in clients:
+                global Kick
+                Kick = True
+                client.close()
+            Kick = True
+            clients.clear()
+            nicknames.clear()  
+            self.destroy()    
 
     def stop(self):
         # thread2.kill()
