@@ -23,6 +23,7 @@ import tkinter as tk
 import urllib, json
 import urllib.request as ur
 import hashlib
+from datetime import datetime
 HOST = '127.0.0.1'
 PORT = 80
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -157,11 +158,13 @@ class FirstScreen(tk.Tk):
         try:
             response = ur.urlopen(url)
             data = json.loads(response.read())
-            covid = f'''{regionTemp} covid figures
-Total cases : {data['cases']}
-Today cases : {data['todayCases']}
-Deaths : {data['deaths']}
-Recover: {data['recovered']}\n'''
+            covid = f'''        ----------->on {datetime.now()}<-------------
+                 -->    {regionTemp} covid figures    <--
+                  Total cases : {data['cases']}         
+                  Today cases : {data['todayCases']}         
+                  Deaths : {data['deaths']}        
+                  Recover: {data['recovered']}         
+       =======================================================\n'''
             client.send(covid.encode('utf-8'))
         except:
             client.send(f"{regionTemp} covid figures could be found\n".encode('utf-8'))
