@@ -18,7 +18,7 @@ import emoji
 import tkinter as tk
 from datetime import datetime
 
-HOST = '127.0.0.1'
+HOST = '192.168.1.13'
 PORT = 80
 
 try:
@@ -239,15 +239,15 @@ class Clinet(tk.Canvas):
         file.add_command(label="Green-Red",command=self.backG)
         menu.add_cascade(label="Change Background", menu=file)
         
-        # edit = Menu(menu)
-        # edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
-        # edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
-        # edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
-        # edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
-        # menu.add_cascade(label="Emoji", menu=edit)
-        # User_manual=Menu(menu)
-        # User_manual.add_command(label="User manual",command=self.User_manual)
-        # menu.add_cascade(label="User manual", menu=User_manual)
+        edit = Menu(menu)
+        edit.add_command(label=emoji.emojize("\U00002665"), command=self.print_heart)
+        edit.add_command(label=emoji.emojize("\U0001F62D"), command=self.print_cry)
+        edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
+        edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
+        menu.add_cascade(label="Emoji", menu=edit)
+        User_manual=Menu(menu)
+        User_manual.add_command(label="User manual",command=self.User_manual)
+        menu.add_cascade(label="Help", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
@@ -388,10 +388,25 @@ class Clinet(tk.Canvas):
         manual=Tk()
         manual.resizable(False,False)
         manual.geometry("400x400")
-        self.text_user = tk.scrolledtext.ScrolledText(manual)
-        self.text_user.config(state='disabled',fg="#00B7FE")
-        self.text_user.configure(bg="white")
-        self.text_user.place(x=0,y=0,width=400,height=400)
+
+        text = tk.scrolledtext.ScrolledText(self)
+        text.place(x=200, y=5)
+        text.config(state='disabled',fg="#00B7FE")
+        text.configure(bg="white")
+        text.config(state='normal')
+        text.insert('end', '''Hướng dẫn sử dụng:
+-Người dùng có thể trò chuyện với nhau
+-Người dùng có thể tra cứu thông tin covid các nước trên 
+thế giới với lệnh:
++/covid all để lấy tổng số ca nhiễm covid trên thế
+giới
++/covid <country > để lấy tổng số ca nhiễm covid 
+của 1 quốc gia( với country là tên của quốc gia muốn tra 
+cứu)
++ /country để lấy, tên các quốc gia''')
+        text.yview('end')
+        text.config(state='disabled')
+    
     def choose_country(self):
         self.country=self.combo.get()
         self.country="/covid "+self.country
