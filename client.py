@@ -18,7 +18,7 @@ import emoji
 import tkinter as tk
 from datetime import datetime
 
-HOST = '192.168.1.13'
+
 PORT = 80
 
 try:
@@ -43,20 +43,25 @@ class FirstScreen(tk.Tk):
         app_icon = Image.open('image/clientlogo.jpg')
         app_icon = ImageTk.PhotoImage(app_icon)
         self.iconphoto(False, app_icon)
+        
         #BACKGROUND
         background = Image.open("image/cam2.jpg")
         background = background.resize((1000, 600), Image.ANTIALIAS)
         self.background = ImageTk.PhotoImage(background)
         tk.Label(self.first_frame, image=self.background).place(x=0, y=0)
 
-
+        
         tk.Label(self.first_frame,text="Login Here",font=("Impact",35,"bold"),fg="#d77337",bg="#FAFAFA").place(x=90,y=30)
         tk.Label(self.first_frame,text="Accountant Emplyee Login Area",font=("Goudy old style",15,"bold"),fg="#d25d17",bg="#FAFAFA").place(x=90,y=100)
         tk.Label(self.first_frame,text="Username",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=140)
+        tk.Label(self.first_frame,text="IP",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=270)
         
         #Enter User
         self.txt_user=Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
         self.txt_user.place(x=90,y=170,width=350,height=35)
+
+        self.txt_ip=Entry(self.first_frame,font=("times new roman",15),bg="lightgray")
+        self.txt_ip.place(x=90,y=300,width=350,height=35)
         
         
         tk.Label(self.first_frame,text="Password",font=("Goudy old style",15,"bold"),fg="gray",bg="#FAFAFA").place(x=90,y=210)
@@ -64,11 +69,12 @@ class FirstScreen(tk.Tk):
         self.txt_pass=tk.Entry(self.first_frame,show="*",font=("times new roman",15),bg="lightgray")
         self.txt_pass.place(x=90,y=240,width=350,height=35)
 
-        tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#FAFAFA",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=280)
+        tk.Button(self.first_frame,text="Create New Account",command=self.createAccount,cursor="hand2",bg="#FAFAFA",fg="#d77337",bd=0,font=("times new roman",12)).place(x=90,y=360)
         tk.Button(self.first_frame,command=self.login_funtion,cursor="hand2",text="Login",fg="white",bg="#d77337",font=("times new roman",20)).place(x=300,y=470,width=180,height=40)\
 
         self.mainloop()
 
+    
     def createAccount(self):
         msg=Tk()
         msg.geometry("380x500")
@@ -117,7 +123,7 @@ class FirstScreen(tk.Tk):
         else:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                client.connect((HOST,PORT))
+                client.connect((self.HOST,PORT))
                 status = client.recv(1024).decode('utf-8')
                 if status == 'not_allowed':
                     client.close()
@@ -159,6 +165,7 @@ class FirstScreen(tk.Tk):
     #-------------login side-----------------   
 
     def login_funtion(self):
+        self.HOST=self.txt_ip.get()
         nicknameClient=self.txt_user.get()
         passwordClient=self.txt_pass.get()
         
@@ -168,7 +175,7 @@ class FirstScreen(tk.Tk):
         else:
             client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             try:
-                client.connect((HOST,PORT))
+                client.connect((self.HOST,PORT))
                 status = client.recv(1024).decode('utf-8')
                 if status == 'not_allowed':
                     client.close()
@@ -196,7 +203,7 @@ class FirstScreen(tk.Tk):
                     self.txt_pass.delete(0, END)
                     messagebox.showerror("Error","Username is logged in")
                     client.close()
-                else: Clinet(self, self.first_frame,client,nicknameClient,passwordClient,HOST,PORT)
+                else: Clinet(self, self.first_frame,client,nicknameClient,passwordClient,self.HOST,PORT)
             # if self.checkLogin(nicknameClient,passwordClient)==1:
                 
             #     Clinet(self,self.first_frame,nicknameClient,passwordClient,HOST,PORT)
