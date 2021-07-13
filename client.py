@@ -18,7 +18,7 @@ import emoji
 import tkinter as tk
 from datetime import datetime
 
-HOST = '127.0.0.1'
+HOST = 'localhost'
 PORT = 80
 
 try:

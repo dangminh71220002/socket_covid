@@ -24,7 +24,7 @@ import urllib, json
 import urllib.request as ur
 import hashlib
 from datetime import datetime
-HOST = '127.0.0.1'
+HOST = 'localhost'
 PORT = 80
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind((HOST,PORT))
@@ -347,7 +347,10 @@ class FirstScreen(tk.Tk):
             Kick = True
             clients.clear()
             nicknames.clear()  
-            self.destroy()    
+            self.destroy()
+            if (One==True):
+                time.sleep(0)
+            server.close()    
 
     def stop(self):
         # thread2.kill()
