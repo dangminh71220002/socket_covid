@@ -24,17 +24,20 @@ import urllib, json
 import urllib.request as ur
 import hashlib
 from datetime import datetime
-# HOST = '127.0.0.1'
+HOST = ''
 PORT = 80
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+server.bind((HOST,PORT))
+server.listen(5)
 clients=[]
 nicknames=[] 
 stop = False
 One = True
-isStart = False
-isServerstop = True
+isServerstop = False
 Kick = False
+import requests
+IPaddres = requests.get('https://checkip.amazonaws.com').text.strip()
+
 class FirstScreen(tk.Tk):
     def __init__(self,port):
         super().__init__()
@@ -52,12 +55,12 @@ class FirstScreen(tk.Tk):
         red = Image.open("image/red.jpg")
         red = red.resize((30, 20), Image.ANTIALIAS)
         self.red = ImageTk.PhotoImage(red)
-        tk.Label(self.first_frame, image=self.red).place(x=760, y=25)
+        # tk.Label(self.first_frame, image=self.red).place(x=760, y=25)
        
         green = Image.open("image/Green.jpg")
         green = green.resize((30, 20), Image.ANTIALIAS)
         self.green = ImageTk.PhotoImage(green)
-        # tk.Label(self.first_frame, image=self.green).place(x=680, y=25)
+        tk.Label(self.first_frame, image=self.green).place(x=760, y=25)
 
 
 
@@ -67,15 +70,16 @@ class FirstScreen(tk.Tk):
         self.text_area.config(state='disabled',fg="#00B7FE")
         self.text_area.configure(bg="white")
         
-        
-        # receive_thread = threading.Thread(target = self.receive)
-        # receive_thread.start()
-        
+        menu = Menu(self)
+        self.config(menu=menu)
+        file = Menu(menu)
+        file.add_command(label="Close server")
+        receive_thread = threading.Thread(target = self.receive)
+        receive_thread.start()
         #---------Lable------------------
         tk.Label(self.first_frame,text="SERVER: ",font=("Impact",20,"bold"),fg="#d77337",bg="#DED461").place(x=370,y=10)
-        # tk.Label(self.first_frame,font=("Impact",20,"bold"),fg="gray",bg="#FAFAFA").place(x=420,y=10)
-        self.server_ip = Entry(self.first_frame,font=("Impact",20,"bold"),fg="#d77337",bg="#DED461")
-        self.server_ip.place(x=490,y=14,width=250,height=36)
+        tk.Label(self.first_frame,text=IPaddres,font=("Impact",20,"bold"),fg="#d77337",bg="#DED461").place(x=490,y=14,width=250,height=36)
+
         tk.Label(self.first_frame,text="Client",font=("times new roman",15),fg="gray",bg="#DED461").place(x=40,y=110)
         tk.Label(self.first_frame,text="Kick Client",font=("times new roman",15),fg="gray",bg="#DED461").place(x=40,y=370)
         tk.Label(self.first_frame,text="Chat",font=("times new roman",15),fg="gray",bg="#DED461").place(x=480,y=50)
@@ -99,9 +103,8 @@ class FirstScreen(tk.Tk):
         self.input.config(font=("Transformers Movie",10))
         self.input.place(x=475, y=500,width=570,height=50)
         self.send=tk.Button(self.first_frame,cursor="hand2",text="SEND",fg="white",bg="#d77337",font=("times new roman",15,),command=self.ServerChat).place(x=1070,y=500,width=60,height=50)
-        # thread2 = threading.Thread(target=self.ServerChat,args=( ))
-        # thread2.start() 
-
+        thread2 = threading.Thread(target=self.ServerChat,args=( ))
+        thread2.start() 
         self.protocol("WM_DELETE_WINDOW",self.stopScream)
         self.mainloop()
 
@@ -263,8 +266,8 @@ class FirstScreen(tk.Tk):
     #mess's server send to client
     def ServerChat(self):
         index=self.input.get('1.0','end')
-        self.input.delete('1.0','end')
-        if (index !='\n'):
+        if index!='\n':
+            self.input.delete('1.0','end')
             inp="server: "+index
             self.text_area.config(state='normal')
             self.text_area.insert('end',inp)
@@ -275,63 +278,23 @@ class FirstScreen(tk.Tk):
     def start(self):
         global server
         global isServerstop
-        global isStart
-        if isStart == False:
-            HOST = self.server_ip.get()
+        if isServerstop==True:
+            tk.Label(self.first_frame, image=self.green).place(x=760, y=25)
             
-            if HOST =='':
-                messagebox.showerror("Error","Invalid IP")
-                return
-
-            isStart = True
             isServerstop= False
-
-            try:
-                self.server_ipOut = tk.Label(self.first_frame, image=self.green).place(x=760, y=25)
-                self.server_ip.place_forget()
-                self.server_ipOut = tk.Label(self.first_frame,text=self.server_ip.get(),font=("Impact",20,"bold"),fg="#d77337",bg="#DED461")
-                self.server_ipOut.place(x=490,y=14,width=250,height=36)
-
-                self.server_ip.config(state='disabled',fg="#d77337",bg="#DED461")
-                
-                server.bind((HOST,PORT))
-                server.listen(5)
-                self.text_area.config(state='normal')
-                self.text_area.insert('end',"Server start\n")
-                self.text_area.yview('end')
-                self.text_area.config(state='disabled')
-                receive_thread = threading.Thread(target = self.receive)
-                receive_thread.start()
-                thread2 = threading.Thread(target=self.ServerChat,args=( ))
-                thread2.start() 
-            except socket.gaierror:
-                messagebox.showinfo(title="Can't connect !", message="Error ip")
-                return
+            server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            HOST = ''
+            PORT = 80
+            server.bind((HOST,PORT))
+            server.listen(5)
+            self.text_area.config(state='normal')
+            self.text_area.insert('end',"Server start\n")
+            self.text_area.yview('end')
+            self.text_area.config(state='disabled')
+            receive_thread = threading.Thread(target = self.receive)
+            receive_thread.start()
         else:
-            if isServerstop==True:
-               
-                HOST = self.server_ip.get()
-                if HOST =='':
-                    messagebox.showerror("Error","Invalid IP")
-                    return
-                isServerstop= False
-                self.server_ipOut = tk.Label(self.first_frame, image=self.green).place(x=760, y=25)
-                self.server_ip.place_forget()
-                self.server_ipOut = tk.Label(self.first_frame,text=self.server_ip.get(),font=("Impact",20,"bold"),fg="#d77337",bg="#DED461")
-                self.server_ipOut.place(x=490,y=14,width=250,height=36)
-
-                self.server_ip.config(state='disabled',fg="#d77337",bg="#DED461")
-                server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                server.bind((HOST,PORT))
-                server.listen(5)
-                self.text_area.config(state='normal')
-                self.text_area.insert('end',"Server start\n")
-                self.text_area.yview('end')
-                self.text_area.config(state='disabled')
-                receive_thread = threading.Thread(target = self.receive)
-                receive_thread.start()
-            else:
-                messagebox.showerror("Warning","SERVER WAS START ! ")
+            messagebox.showerror("Warning","SERVER WAS START ! ")
     def close(self):
             global server
             global isServerstop
@@ -341,11 +304,7 @@ class FirstScreen(tk.Tk):
                 self.text_area.insert('end',"Server stop\n")
                 self.text_area.yview('end')
                 self.text_area.config(state='disabled')
-                self.server_ipOut.place_forget()
-                self.server_ip.place(x=490,y=14,width=250,height=36)
-                print("ABCDEF")
-                self.server_ip.config(state='normal',fg="#d77337",bg="#DED461")
-
+                print("stop")
                 tk.Label(self.first_frame, image=self.red).place(x=760, y=25)
                 self.broadcast('Server offline'.encode('utf-8'))
                 for client in clients:
@@ -361,9 +320,10 @@ class FirstScreen(tk.Tk):
             else :
                 messagebox.showerror("Warning","SERVER WAS STOP ! ")
     def stopScream(self):
-        
+        global server
         res = messagebox.askyesno(title='Warning !',message="Do you really want to disconnect ?")
         if res:
+            
             self.broadcast('Server offline'.encode('utf-8'))
 
             for client in clients:
@@ -376,7 +336,7 @@ class FirstScreen(tk.Tk):
             self.destroy()
             if (One==True):
                 time.sleep(0)
-            server.close()    
+            server.close()
 
     def stop(self):
         # thread2.kill()
@@ -491,7 +451,8 @@ class FirstScreen(tk.Tk):
         try: 
             global One
             while True:
-                client,address  =server.accept()
+                global server
+                client,address  = server.accept()
 
                 self.text_user.config(state='normal')
                 self.text_user.insert('end',f"Connected with{str(address)}\n")
@@ -507,7 +468,7 @@ class FirstScreen(tk.Tk):
                 try:
                     nickname= client.recv(1024).decode('utf-8')
                     password= client.recv(1024).decode('utf-8')
-                    option  = client.recv(1024).decode('utf-8')
+                    print(nickname,password)
                     # print(option,nickname,password)
                 except:
                     self.text_user.config(state='normal')
@@ -516,11 +477,12 @@ class FirstScreen(tk.Tk):
                     self.text_user.config(state='disabled')
                     client.close()
                     break
-                    continue
-                if option=='login': self.ProcessLogin(nickname,password,client,address)
-                if option=='register': self.ProcessRegister(nickname,password,client,address)
+                option = nickname[0]
+                nickname = nickname[1:]
+                if option=='1': self.ProcessLogin(nickname,password,client,address)
+                if option=='2': self.ProcessRegister(nickname,password,client,address)
                 if len(nicknames)>0 and One == True: 
-                    t = threading.Thread(target=self.set_interval,args=(self.update,10,), daemon=True)
+                    t = threading.Thread(target=self.set_interval,args=(self.update,3600,), daemon=True)
                     t.start()
                     One = False
 
