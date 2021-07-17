@@ -283,6 +283,11 @@ class Clinet(tk.Canvas):
         send_label=ImageTk.PhotoImage(send_label)
         self.send_label = tk.Button(self, image=send_label,command=self.write, borderwidth = 0)
 
+        out_label=Image.open("image/loout.jpg")
+        out_label=out_label.resize((30,30),Image.ANTIALIAS)
+        out_label=ImageTk.PhotoImage(out_label)
+        self.out_label=tk.Button(self, image=out_label,command=self.on_closing, borderwidth = 0,bg="#2E353E")
+
         #Scream Chat
         chat_msg=Image.open("image/covidmini.jpg")
         chat_msg=chat_msg.resize((50,50),Image.ANTIALIAS)
@@ -365,6 +370,7 @@ class Clinet(tk.Canvas):
  
         
         self.send_label.place(x=800,y=470)
+        self.out_label.place(x=1000,y=30)
   
 # Create def of button and set image
         
