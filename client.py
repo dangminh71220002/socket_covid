@@ -169,7 +169,7 @@ class FirstScreen(tk.Tk):
         nicknameClient=self.txt_user.get()
         passwordClient=self.txt_pass.get()
         HOST = self.txt_ip.get()
-        print("save")
+
         if HOST =='':
             messagebox.showerror("Error","Invalid IP")
 
@@ -180,7 +180,6 @@ class FirstScreen(tk.Tk):
             try:
                 client.connect((HOST,PORT))
                 status = client.recv(1024).decode('utf-8')
-                print("123")
                 if status == 'not_allowed':
                     client.close()
                     messagebox.showinfo(title="Can't connect !", message='Sorry, server is completely occupied.'
@@ -260,9 +259,9 @@ class Clinet(tk.Canvas):
         # edit.add_command(label=emoji.emojize("\U0001F604"), command=self.print_facesmile)
         # edit.add_command(label=emoji.emojize("\U0001F97A"), command=self.sadface)
         # menu.add_cascade(label="Emoji", menu=edit)
-        # User_manual=Menu(menu)
-        # User_manual.add_command(label="User manual",command=self.User_manual)
-        # menu.add_cascade(label="User manual", menu=User_manual)
+        User_manual=Menu(menu)
+        User_manual.add_command(label="User manual",command=self.User_manual)
+        menu.add_cascade(label="User manual", menu=User_manual)
     #-----------------------------------------------------------------------------------
      
        
@@ -415,9 +414,16 @@ class Clinet(tk.Canvas):
         self.text_user.place(x=0,y=0,width=400,height=400)
     def choose_country(self):
         self.country=self.combo.get()
+        Country=self.country
         self.country="/covid "+self.country
         name_country = f"{self.nickname} : {self.country}\n"
         self.sock.send(name_country.encode('utf-8'))
+
+        self.text_area.config(state='normal')
+        self.text_area.insert('end', f"server: You find covid-19 at {Country}. Half a moment \n") 
+        self.text_area.yview('end')
+        self.text_area.config(state='disabled')
+
         
 
 #-------------------------------------------------------------------------------
