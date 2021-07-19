@@ -179,10 +179,10 @@ class FirstScreen(tk.Tk):
             data = json.loads(response.read())
             covid = f'''        ----------->on {datetime.now()}<-------------
                  -->    {regionTemp} covid figures    <--
-                  Total cases : {data['cases']}         
-                  Today cases : {data['todayCases']}         
-                  Deaths : {data['deaths']}        
-                  Recover: {data['recovered']}         
+                        Total cases : {data['cases']}         
+                        Today cases : {data['todayCases']}         
+                        Deaths : {data['deaths']}        
+                        Recover: {data['recovered']}         
        =======================================================\n'''
             client.send(covid.encode('utf-8'))
         except:
@@ -468,7 +468,8 @@ class FirstScreen(tk.Tk):
                 try:
                     nickname= client.recv(1024).decode('utf-8')
                     password= client.recv(1024).decode('utf-8')
-                    print(nickname,password)
+                
+                    print(nickname.strip("1"),password)
                     # print(option,nickname,password)
                 except:
                     self.text_user.config(state='normal')
