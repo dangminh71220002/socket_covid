@@ -14,7 +14,6 @@ import tkinter.scrolledtext
 from tkinter import simpledialog
 from tkinter import *
 from PIL import Image,ImageTk
-import emoji
 import tkinter as tk
 from datetime import datetime
 
