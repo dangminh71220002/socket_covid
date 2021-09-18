@@ -1,29 +1,25 @@
 import socket
 import tkinter as tk
 from PIL import Image, ImageTk
-from tkinter import ttk
-from tkinter import filedialog
 from tkinter import messagebox
-import pickle
 from datetime import datetime
 import os
 import threading
 import time
-
-from threading import Timer
 import socket
 import threading
 import tkinter
 import tkinter.scrolledtext
-from tkinter import simpledialog
 from tkinter import *
 from PIL import Image,ImageTk
-import emoji
 import tkinter as tk
 import urllib, json
 import urllib.request as ur
 import hashlib
 from datetime import datetime
+
+
+
 HOST = ''
 PORT = 80
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
