@@ -11,7 +11,6 @@ import socket
 import threading
 import tkinter
 import tkinter.scrolledtext
-from tkinter import simpledialog
 from tkinter import *
 from PIL import Image,ImageTk
 import tkinter as tk
