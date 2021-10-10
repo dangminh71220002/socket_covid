@@ -7,12 +7,9 @@ from tkinter import messagebox
 from tkinter.ttk import *
 from datetime import datetime
 import threading
-import socket
-import threading
 import tkinter
 import tkinter.scrolledtext
 from tkinter import *
-from PIL import Image,ImageTk
 import tkinter as tk
 from datetime import datetime
 
